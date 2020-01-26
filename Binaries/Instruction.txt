@@ -1,0 +1,2 @@
+This section contains C and Python Programs . Note for python program You need to manually add ffmpeg and exiftool to path.
+Both C & Python Programs are portable , however C program was developed for windows only. 

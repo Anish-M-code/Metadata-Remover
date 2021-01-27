@@ -1,12 +1,12 @@
 
-/* Metadata Removal Tool v3.2.1 for windows. Compile using gcc c complier mingw only*/
+/* Metadata Removal Tool v3.2.2 for windows. Compile using gcc c complier mingw only*/
 //[ THIS IS A STABLE RELEASE]
 
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
 
-char  file[50],vfile[50],fil[30],vfil[30];
+char  file[80],vfile[80],fil[50],vfil[50];
 
 //Function For pausing program temporarily to display message.
 void pause()
@@ -34,14 +34,34 @@ void checker()
     }
     }
 
+//Function to check if output file is generated when expected and throw errors when necessary for videos.
+void vchecker()
+    {
+        int check=0;
+        char eff[200] , fvfile[50];
+        strcpy(fvfile,"Videos\\final_");
+        strcat(fvfile,vfil);
+        memcpy(eff,"exiftool ",10);eff[9]='\0';
+        strcat(eff,fvfile);
+        strcat(eff,">video_output_metadata.txt");
+    check=system(eff);
+    if(check!=0)
+    {
+        printf("\n\nOutput.txt couldnot be created!\nmaybe exiftool is missing or u don't have user permissions or\nSomething went wrong like you entering a non image file!");
+        system("start https://exiftool.org");
+        pause();
+        exit(0);
+    }
+    }
+
 //Function to get input from user.
  void input()
     {
       system("cls");
         printf("\n\t|---------Image Sanitisation Tool ---------|\n");
         printf("\n\n Enter Image name:");
-        scanf("%15s",fil);
-        memcpy(file,"Process\\",10);file[9]='\0';
+        scanf("%30s",fil);
+        memcpy(file,"Images\\",9);file[8]='\0';
         strcat(file,fil);
     }
 
@@ -71,6 +91,25 @@ void sanitize()
        memcpy(eff,"exiftool ",10);eff[9]='\0';
      strcat(eff,file);
     strcat(eff,">input.txt");
+    check=system(eff);
+    if(check!=0)
+    {
+        printf("\n\nInput log couldnot be created \nmaybe exiftool is missing! or u don't have enough access permission!\n\nSomething went wrong like you entering a non image file!\n\n");
+        system("start https://exiftool.org");
+        pause();
+        exit(0);
+    }
+    }
+
+
+    //Function to generate and check generation of input log for videos.
+   void ivchecker()
+    {
+        int check=0;
+       char eff[200];
+       memcpy(eff,"exiftool ",10);eff[9]='\0';
+     strcat(eff,vfile);
+    strcat(eff,">video_input_metadata.txt");
     check=system(eff);
     if(check!=0)
     {
@@ -155,10 +194,11 @@ fclose(a);fclose(b);
     void vinput()
 {
     /* Gets input ( filename ) for removal  of metadata from videos*/
+    system("cls");
     printf("\n\t |----- Video sanitisation tool -----|\n");
     printf("\n\n Enter Video name:");
-    scanf("%15s",vfil);
-        memcpy(vfile,"Procesv\\",10);vfile[9]='\0';
+    scanf("%30s",vfil);
+        memcpy(vfile,"Videos\\",9);vfile[8]='\0';
         strcat(vfile,vfil);
 }
 void vdetect()
@@ -183,20 +223,23 @@ void vtool()
     f=fopen("ffmpeg.exe","r");
     if(f==NULL)
     {
-        printf("\n\n Critical Warning: FFMPEG.EXE NOT FOUND!");
-        printf("\n\n<------ Video Sanitization may fail! ----->\n");
+        printf("\n\n Critical Error: FFMPEG.EXE NOT FOUND!");
+        printf("\n\n<------ Video Sanitization Failed! ----->\n");
         printf("\n\n");
         system("timeout 10");
         system("cls");
+        fclose(f);
+        exit(1);
     }
     fclose(f);
+
 }
 void vsanitise()
 {
     /* Actual metadata removal process happens here.*/
     int status=0;
     char buffer[1000];char fvfile[50];
-    strcpy(fvfile,"Procesv\\final_");
+    strcpy(fvfile,"Videos\\final_");
     strcat(fvfile,vfil);
     memcpy(buffer,"ffmpeg -i ",11);buffer[10]='\0';
     strcat(buffer,vfile);
@@ -215,7 +258,9 @@ void qrun()
     vtool();
     vinput();
     vdetect();
+    ivchecker();
     vsanitise();
+    vchecker();
     pause();
 }
     void menu()
@@ -249,7 +294,7 @@ void qrun()
 
     void main()
     {
-        system("title Metadata Removal Tool v3.2.1");
+        system("title Metadata Removal Tool v3.2.2");
         menu();
     }
 

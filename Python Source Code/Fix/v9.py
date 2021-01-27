@@ -15,8 +15,8 @@ except ImportError:
 def san():
     cls()
     print('\n |------ Metadata Removal Tool ------|\n')
-    print(' 1)Remove Metadata from images.')
-    print(' 2)Remove Metadata from videos.')
+    print(' 1)Remove Metadata from a image.')
+    print(' 2)Remove Metadata from a video.')
     print(' 3)Bulk Image Metadata Removing Script Generator.')
     print(' 4)Remove Metadata from all images in folder.')
     print(' 5)Remove Metadata from all videos in folder.')

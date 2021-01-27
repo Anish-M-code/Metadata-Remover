@@ -5,7 +5,7 @@ A simple Metadata Removal Tool for removing metadata from images and videos. Dev
 
 <img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/Screen%20Shots/Scan.JPG">
 
-Take back your Privacy Online by removing Metadata before you post and reduce size of your images.
+Take back your Privacy Online by removing Identifiable Metadata before you post and reduce size of your images.
 
 <img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/Screen%20Shots/Results.JPG">
 

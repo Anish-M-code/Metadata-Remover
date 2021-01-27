@@ -9,7 +9,7 @@ Take back your Privacy Online by removing Identifiable Metadata before you post 
 
 <img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/Screen%20Shots/Results.JPG">
 
-Removes Metadata which might expose your location or show which device you are using to take photos and videos.
+Removes Metadata which might expose your location or show which device you used to take photos and videos.
 
 # Why is it important?
 

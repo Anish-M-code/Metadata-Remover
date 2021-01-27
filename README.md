@@ -15,6 +15,8 @@ Removes Metadata which might expose your location or show which device you used 
 
 Privacy is hard to get Nowadays.
 
+Web Developers might find reduced image size a boon.
+
 # Support for Other Documents ( PDF/ Docx etc )
 
 This Tool doesnot support other Formats.

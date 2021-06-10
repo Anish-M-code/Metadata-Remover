@@ -5,7 +5,7 @@ Step 2: Open run.c and build in code blocks.
 
 <img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/Source%20Code/C%20Source%20code/compile.png">
 
-step 3: Create Images and Videos folder and organize all stuff as shown in image below: -
+step 3: Download [ exiftool ](https://exiftool.org/) and [ ffmpeg ](https://www.ffmpeg.org/) , Create Images and Videos folder and organize all stuff as shown in image below: -
 
 <img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/Source%20Code/C%20Source%20code/organize.png">
 

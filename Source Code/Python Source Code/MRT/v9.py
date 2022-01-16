@@ -3,9 +3,7 @@
 try:
     from commons import *
     from mrt import *
-    from emrt import *
    
-    
 except ImportError:
     print(' Critical Error :Required Modules were not Found!')
     x=input('\n Press any key to exit...')
@@ -17,11 +15,12 @@ def san():
     print('\n |------ Metadata Removal Tool ------|\n')
     print(' 1)Remove Metadata from a image.')
     print(' 2)Remove Metadata from a video.')
-    print(' 3)Bulk Image Metadata Removing Script Generator.')
-    print(' 4)Remove Metadata from all images in folder.')
-    print(' 5)Remove Metadata from all videos in folder.')
-    print(' 6)View Metadata in a file.')
-    x=input('\n Enter command(1,2,3,4,5 or 6):')
+    print(' 3)Remove Metadata from a audio.')
+    print(' 4)Remove Metadata from a Torrent.')
+    print(' 5)Remove Metadata from all images in folder.')
+    print(' 6)Remove Metadata from all videos in folder.')
+    print(' 7)View Metadata in a file.')
+    x=input('\n Enter command(1,2,3,4,5,6 or 7):')
     if x=='1':
         file=input('\n Enter image name:')
         singly(file,'i')
@@ -33,18 +32,28 @@ def san():
         san()
         exit()
     elif x=='3':
-        bulkimgScript()
+        file=input('\n Enter Audio File:')
+        os.chdir('MRT')
+        os.system('py mat2.py '+file)
+        os.chdir('..')
         san()
         exit()
-    elif x=='4':
-        bulk()
+    elif x == '4':
+        file=input('\n Enter Torrent File:')
+        os.chdir('MRT')
+        os.system('py mat2.py '+file)
+        os.chdir('..')
         san()
         exit()
     elif x=='5':
-        bulk1()
+        bulk()
         san()
         exit()
     elif x=='6':
+        bulk1()
+        san()
+        exit()
+    elif x=='7':
         exiftool()
         rb=input(' Enter Filename:')
         if os.path.exists(rb)==False:

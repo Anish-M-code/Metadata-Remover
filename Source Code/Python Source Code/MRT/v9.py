@@ -42,14 +42,14 @@ def san():
     elif x=='3':
         file=input('\n Enter Audio File:')
         os.chdir('MRT')
-        os.system('py mat2.py '+file)
+        os.system('python3 mat2.py '+file)
         os.chdir('..')
         san()
         exit()
     elif x == '4':
         file=input('\n Enter Torrent File:')
         os.chdir('MRT')
-        os.system('py mat2.py '+file)
+        os.system('python3 mat2.py '+file)
         os.chdir('..')
         san()
         exit()

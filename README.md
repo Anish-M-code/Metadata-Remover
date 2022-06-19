@@ -27,7 +27,8 @@ For PDFs here is a small technique : https://outflaw.blogspot.com/2019/11/hiding
 
 # Quick Installation 
 
-Click here for instructions and link to downloads : [Metadata-Remover Download](https://github.com/Anish-M-code/Metadata-Remover/releases/tag/v1.5)
+Click here for instructions and link to downloads : [Download Metadata-Remover](https://github.com/Anish-M-code/Metadata-Remover/releases/tag/v1.5)
+Please read about security related information from here: [ Project Security](/SECURITY.md) 
 
 # Disclaimer:
 

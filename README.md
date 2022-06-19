@@ -25,6 +25,10 @@ Use Document Inspector in Microsoft Office for Documents like docx , pptx etc .
 
 For PDFs here is a small technique : https://outflaw.blogspot.com/2019/11/hiding-metadata-from-pdf-documents.html
 
+# Quick Installation 
+
+Click here for instructions and link to downloads : [Metadata-Remover Download](https://github.com/Anish-M-code/Metadata-Remover/releases/tag/v1.5)
+
 # Disclaimer:
 
 USE AT YOUR OWN RISK DEVELOPER NOT RESPONSIBLE FOR DAMAGES ARISING FROM USE OF THIS SOFTWARE.

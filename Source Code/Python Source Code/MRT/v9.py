@@ -10,6 +10,7 @@ except ImportError:
     exit()
 
 import os
+from shutil import move
 try:
     import mutagen
 except:
@@ -39,15 +40,19 @@ def san():
         exit()
     elif x=='3':
         file=input('\n Enter Audio File:')
+        y=move(file,'MRT')
         os.chdir('MRT')
         os.system('py mat2.py '+file)
+        y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
         os.chdir('..')
         san()
         exit()
     elif x == '4':
         file=input('\n Enter Torrent File:')
+        y=move(file,'MRT')
         os.chdir('MRT')
         os.system('py mat2.py '+file)
+        y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
         os.chdir('..')
         san()
         exit()

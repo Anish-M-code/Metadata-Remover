@@ -22,10 +22,6 @@ UNSUPPORTED_EXTENSIONS = {
     }
 
 DEPENDENCIES = {
-    'Cairo': {
-        'module': 'cairo',
-        'required': True,
-    },
     'Mutagen': {
         'module': 'mutagen',
         'required': True,

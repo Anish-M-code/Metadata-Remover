@@ -1,7 +1,7 @@
 # Using Metadata-Remover Securely
 
 Metadata-Remover Project uses external programs exiftool and ffmpeg for detecting and removing metadata, rest of the program is written
-either in pure python or pure C , only libmat2 from https://0xacab.org/jvoisin/mat2/ has been used for audio and torrent support in python version ,
+either in pure python or pure C , only mutagen and libmat2 from https://0xacab.org/jvoisin/mat2/ has been used for audio and torrent support in python version ,
 no other third party packages were used due to security reasons.
 
 It is strongly advised to use Metadata-Remover only on Media you trust , incase if you have to process untrusted media it is strongly

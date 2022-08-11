@@ -12,10 +12,8 @@ except ImportError:
 import os
 try:
     import mutagen
-    import cairo
 except:
     os.system('pip install mutagen')
-    os.system('pip install pycairo')
 
 # Function to display main menu()
 def san():

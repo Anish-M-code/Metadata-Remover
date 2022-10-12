@@ -15,7 +15,7 @@ Removes Metadata which might expose your location or show which device you used 
 
 Privacy is hard to get Nowadays.
 
-Web Developers might find reduced image size a boon.
+Reduced image size will be a boon for web devs while embedding images in websites.
 
 # Support for Other Documents ( PDF/ Docx etc )
 

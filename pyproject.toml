@@ -1,0 +1,10 @@
+[project]
+name = "metadata_remove"
+version = "1.6"
+description = "Tool for removing metadata from images and videos"
+license = {file = "LICENSE.txt"}
+readme = "README.md"
+
+dependencies = [
+    "Click>=7.0"
+]

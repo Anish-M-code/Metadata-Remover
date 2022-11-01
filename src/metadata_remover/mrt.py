@@ -4,15 +4,6 @@
 An Cross-platform opensource Metadata Remover using exiftool and ffmpeg to sanitize your images before posting on internet.
 '''
 
-try:
-  
-  from commons import *
-  
-except ImportError:
-  print(" The commons Modules Not Found! in mrt")
-  x=input()
-  exit()
-
 # Function to write given message to file named log in append mode.
 def w(msg,file='log'):
     with open(file,'a+') as f:

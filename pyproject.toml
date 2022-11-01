@@ -1,5 +1,5 @@
 [project]
-name = "metadata_remove"
+name = "metadata_remover"
 version = "1.6"
 description = "Tool for removing metadata from images and videos"
 license = {file = "LICENSE.txt"}

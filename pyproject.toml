@@ -6,5 +6,5 @@ license = {file = "LICENSE.txt"}
 readme = "README.md"
 
 dependencies = [
-    "Click>=7.0"
+    "mat2"
 ]

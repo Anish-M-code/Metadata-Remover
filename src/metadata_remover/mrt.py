@@ -1,8 +1,11 @@
 #flag=imp
 
 ''' 
-An Cross-platform opensource Metadata Remover using exiftool and ffmpeg to sanitize your images before posting on internet.
+A Cross-platform opensource Metadata Remover using exiftool and ffmpeg to sanitize your images before posting on internet.
 '''
+
+import os, time
+import metadata_remover.commons as c
 
 # Function to write given message to file named log in append mode.
 def w(msg,file='log'):
@@ -12,7 +15,7 @@ def w(msg,file='log'):
 # Function to read and display metadata of a file.  
 def meta(file):
   os.system('exiftool '+file+' >meta.txt')
-  display('meta.txt')
+  c.c.display('meta.txt')
   os.remove('meta.txt')
 
 # Function to rename exiftool(-k).exe as exiftool.exe in windows.
@@ -30,7 +33,7 @@ def img(x):
 
 # Function to remove metadata from video file. 
 def vid(x):
-  ffmpeg()
+  c.ffmpeg()
   count=-1
   for i in x :
     count+=1
@@ -40,18 +43,15 @@ def vid(x):
   ext=x[count:]
   y=file+'_clean'+ext
   os.system('ffmpeg -i '+x+' -map_metadata -1 -c:v copy -c:a copy '+y)
-  if platform.system().lower()=='windows':
-    os.system('cls')
-  else:
-    os.system('clear')
+  c.cls()
   os.system('exiftool '+y+'>output.txt')
-  copy('output.txt','output_log.txt')
+  c.copy('output.txt','output_log.txt')
 
 # Function to remove metadata from single image or video file. It uses img() and vid() internally.
 # x denotes file given as input , y can be either i for images or v for videos , mode can be n for normal mode, or b for bulk processing mode.
 def singly(x,y,mode='n'):
  autoexif()
- exiftool()
+ c.exiftool()
  flag=0
 
  if os.path.exists(x)==False:
@@ -65,19 +65,19 @@ def singly(x,y,mode='n'):
    for i in v:
     if x.lower().endswith(i):   
       os.system("exiftool "+x+">input.txt")
-      copy('input.txt','input_log.txt')
+      c.copy('input.txt','input_log.txt')
       img(x)
       flag=1
       os.system("exiftool "+x+">output.txt")
-      copy('output.txt','output_log.txt')
+      c.copy('output.txt','output_log.txt')
 
  elif y.lower()=='v':
-   ffmpeg()
+   c.ffmpeg()
    v=('.mp4','.mov','.webm','.ogv','.flv','.wmv','.avi','.mkv','.vob','.ogg','.3gp')
    for i in v:
     if x.lower().endswith(i):   
       os.system("exiftool "+x+">input.txt")
-      copy('input.txt','input_log.txt')
+      c.copy('input.txt','input_log.txt')
       vid(x)
       flag=1
     
@@ -89,15 +89,12 @@ def singly(x,y,mode='n'):
 
   if flag==0:
     print("\n Invalid File for processing!")
-    wait()
+    c.wait()
     exit()
 
  if ((os.path.exists('input.txt')==True)and(os.path.exists('output.txt')==True)):
   if os.path.getsize('output.txt')==0:
-    if platform.system().lower()=='windows':
-      os.system('cls')
-    else:
-      os.system('clear')
+    c.cls()
     print(' Error Processing File!')
   elif os.path.getsize('input.txt')>os.path.getsize('output.txt'):
     print(x+': Metadata removed successfully!')
@@ -113,60 +110,54 @@ def singly(x,y,mode='n'):
   os.remove('output.txt')
       
  if mode=='n':
-    wait()
+    c.wait()
     if os.path.exists('log'):
       os.remove('log')
 
 # Function to remove metadata of all images from folder.    
 def bulk():
-  start()
+  c.start()
   loc=input(' Enter Folder:')
-  if platform.system().lower()=='windows':
+  if c.sys() =='windows':
     if os.path.exists('exiftool.exe'):
-      bcopy('exiftool.exe',loc+'\\exiftool.exe')
+      c.copy('exiftool.exe',loc+'\\exiftool.exe')
   os.chdir(loc)
   for i in os.listdir():
       singly(i,'i','b')
-      if platform.system().lower()=='windows':
-         os.system('cls')
-      else:
-         os.system('clear')
+      c.cls()
   
   print('\nOutput\n')       
-  display('log')
+  c.display('log')
   if os.path.exists('log'):
     os.remove('log')
   else:
     print('No Image Files Detected!')
   print('Done')
-  wait()
-  end()
+  c.wait()
+  c.end()
 
 # Function to remove metadata of all videos from folder.
 def bulk1():
-  start()
+  c.start()
   loc=input(' Enter Folder:')
-  if platform.system().lower()=='windows':
+  if c.sys() =='windows':
     if os.path.exists('exiftool.exe'):
-      bcopy('exiftool.exe',loc+'\\exiftool.exe')
+      c.copy('exiftool.exe',loc+'\\exiftool.exe')
     if os.path.exists('ffmpeg.exe'):
-      bcopy('ffmpeg.exe',loc+'\\ffmpeg.exe')
+      c.copy('ffmpeg.exe',loc+'\\ffmpeg.exe')
   os.chdir(loc)
   for i in os.listdir():
       singly(i,'v','b')
-      if platform.system().lower()=='windows':
-         os.system('cls')
-      else:
-         os.system('clear')
+      c.cls()
   print('\nOutput\n')
-  display('log')
+  c.display('log')
   if os.path.exists('log'):
     os.remove('log')
   else:
     print('No Video Files Detected!')
-  wait()
-  end()
+  c.wait()
+  c.end()
       
 if __name__=='__main__':
   print('\n |----- MRT module stable release version 0.2.4 ----|')
-  wait()
+  c.wait()

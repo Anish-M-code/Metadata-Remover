@@ -1,18 +1,13 @@
 #flag=imp
 
-from metadata_remover import commons
-from metadata_remover import mrt
+from metadata_remover.commons import cls, exiftool, wait
+from metadata_remover.mrt import bulk, bulk1, singly, meta
 
 import os
 from shutil import move,copy
 
-# Clearscreen
-if platform.system().lower()=='windows':
-    os.system('cls')
-else:
-    os.system('clear')
-
 # Display menu
+cls()
 print('''
 \n |------ Metadata Removal Tool ------|\n
     1)Remove Metadata from a image.
@@ -26,49 +21,40 @@ print('''
 
 # Take and parse input
 x=input('\n Enter command(1,2,3,4,5,6 or 7):')
-if x=='1':
-    file=input('\n Enter image name:')
-    singly(file,'i')
-    exit()
-elif x=='2':
-    file=input('\n Enter Video name:')
-    singly(file,'v')
-    exit()
-elif x=='3':
-    file=input('\n Enter Audio File:')
-    y=copy(file,'MRT')
-    os.chdir('MRT')
-    os.system('py mat2.py '+file)
-    y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
-    os.remove(file)
-    os.chdir('..')
-    exit()
-elif x == '4':
-    file=input('\n Enter Torrent File:')
-    y=copy(file,'MRT')
-    os.chdir('MRT')
-    os.system('py mat2.py '+file)
-    y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
-    os.remove(file)
-    os.chdir('..')
-    exit()
-elif x=='5':
-    bulk()
-    exit()
-elif x=='6':
-    bulk1()
-    exit()
-elif x=='7':
-    exiftool()
-    rb=input(' Enter Filename:')
-    if os.path.exists(rb)==False:
-        print('\n File Not Found!\n')
+match x:
+    case '1':
+        file=input('\n Enter image name:')
+        singly(file,'i')
+    case '2':
+        file=input('\n Enter Video name:')
+        singly(file,'v')
+    case '3':
+        file=input('\n Enter Audio File:')
+        y=copy(file,'MRT')
+        os.chdir('MRT')
+        os.system('py mat2.py '+file)
+        y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
+        os.remove(file)
+        os.chdir('..')
+    case '4':
+        file=input('\n Enter Torrent File:')
+        y=copy(file,'MRT')
+        os.chdir('MRT')
+        os.system('py mat2.py '+file)
+        y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
+        os.remove(file)
+        os.chdir('..')
+    case '5':
+        bulk()
+    case '6':
+        bulk1()
+    case '7':
+        exiftool()
+        rb=input(' Enter Filename:')
+        if os.path.exists(rb)==False:
+            print('\n File Not Found!\n')
+            wait()
+            exit(0)
+        meta(rb)
         wait()
-        exit(0)
-    meta(rb)
-    wait()
-    exit()
-elif x.lower()=='mm' or x.lower()=='c' or x.lower()=='close':
-    exit()
-else:
-    exit()
+exit()

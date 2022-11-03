@@ -100,8 +100,4 @@ def bcopy(file,file1):
 
 # Clear screen
 def cls():
-    os.system('cls') if sys() == 'windows' else os.system('clear')
-
-# Get system name
-def sys():
-    return "windows" if platform.system().lower() == 'windows' else "notwin"
+    os.system('cls') if platform.system().lower() == 'windows' else os.system('clear')

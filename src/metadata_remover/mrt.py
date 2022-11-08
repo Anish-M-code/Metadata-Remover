@@ -6,6 +6,7 @@ A Cross-platform opensource Metadata Remover using exiftool and ffmpeg to saniti
 
 import os, time
 import metadata_remover.commons as c
+import platform
 
 # Function to write given message to file named log in append mode.
 def w(msg,file='log'):
@@ -118,7 +119,7 @@ def singly(x,y,mode='n'):
 def bulk():
   c.start()
   loc=input(' Enter Folder:')
-  if c.sys() =='windows':
+  if platform.system().lower() == 'windows' =='windows':
     if os.path.exists('exiftool.exe'):
       c.copy('exiftool.exe',loc+'\\exiftool.exe')
   os.chdir(loc)
@@ -140,7 +141,7 @@ def bulk():
 def bulk1():
   c.start()
   loc=input(' Enter Folder:')
-  if c.sys() =='windows':
+  if platform.system().lower() == 'windows' =='windows':
     if os.path.exists('exiftool.exe'):
       c.copy('exiftool.exe',loc+'\\exiftool.exe')
     if os.path.exists('ffmpeg.exe'):

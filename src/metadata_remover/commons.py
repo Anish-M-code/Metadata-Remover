@@ -18,7 +18,7 @@ def r(f):
 def detect(cmd,web,snam,pkg):
         cls()
     
-        if sys() =='windows':
+        if platform.system().lower() == 'windows' =='windows':
               if os.system(cmd+'>chk')!=0:
                 print('\nError: '+pkg+' is not detected!')
                 print('\nPlease wait opening '+snam +' website in your browser!\nYou Have to download and install it.\n')

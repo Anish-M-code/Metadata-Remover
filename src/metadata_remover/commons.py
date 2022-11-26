@@ -5,19 +5,9 @@ This is the common library developed to satisfy the needs of  commandline python
 It contains necessary  std libraries and basic functions for  its users.
 '''	
 	
-try:
-   import hashlib
-   import time
-   import platform
-   import os
-   import getpass
-   import webbrowser
-
-except ImportError:
-    print('Critical Error: Necessary Python Modules are missing!')
-    print('Commons module couldnot satisfy all the dependencies!')
-    x=input('\nPress any key to exit...')
-    exit()
+import platform
+import os
+import webbrowser
 
 # Deletes file after checking if it exists or not.
 def r(f):
@@ -26,10 +16,10 @@ def r(f):
 
 # Function to open website if prerequisite software is not found in PC.    
 def detect(cmd,web,snam,pkg):
+        cls()
     
-        if platform.system().lower()=='windows':
+        if platform.system().lower() == 'windows' =='windows':
               if os.system(cmd+'>chk')!=0:
-                os.system('cls')
                 print('\nError: '+pkg+' is not detected!')
                 print('\nPlease wait opening '+snam +' website in your browser!\nYou Have to download and install it.\n')
                 webbrowser.open(web)
@@ -38,8 +28,7 @@ def detect(cmd,web,snam,pkg):
                 exit()
                 
         else:
-         if os.system(cmd+'>chk')!=0:  
-           os.system('clear')         
+         if os.system(cmd+'>chk')!=0:      
            print('\nError:'+pkg+' is not detected!\n Please install The package to continue.')
            x=input('\nPress any key to exit...')
            r('chk')
@@ -109,18 +98,6 @@ def bcopy(file,file1):
     f.close()
     s.close()
 
-# Clearscreen
+# Clear screen
 def cls():
-    if platform.system().lower()=='windows':
-       os.system('cls')
-    else:
-       os.system('clear')
-
-
-
-
-
-
-
-
-    
+    os.system('cls') if platform.system().lower() == 'windows' else os.system('clear')

@@ -1,5 +1,5 @@
 
-/* Metadata Removal Tool v3.2.2 for windows. Compile using gcc c complier mingw only*/
+/* Metadata Removal Tool v3.2.8 for windows. Compile using gcc c complier mingw only*/
 //[ THIS IS A STABLE RELEASE]
 
 #include<string.h>

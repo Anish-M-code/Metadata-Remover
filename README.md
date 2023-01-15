@@ -3,11 +3,11 @@ A simple Metadata Removal Tool for removing metadata from images and videos. Dev
 
 # Whats the Use?
 
-<img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/screenshots/Scan.JPG" width="677" height="345">
+<img src="https://user-images.githubusercontent.com/82881725/212539916-9c4386ba-a6f2-48d2-aa13-c523f33da46e.JPG" width="677" height="345">
 
 Take back your Privacy Online by removing Identifiable Metadata before you post and reduce size of your images.
 
-<img src="https://github.com/Anish-M-code/Metadata-Remover/raw/master/screenshots/Results.JPG">
+<img src="https://user-images.githubusercontent.com/82881725/212539943-c7d1e178-5937-4c49-8665-e91408dc5902.JPG">
 
 Removes Metadata which might expose your location or show which device you used to take photos and videos.
 

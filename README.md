@@ -36,3 +36,9 @@ Please read about security related information from here: [ Project Security](/S
 USE AT YOUR OWN RISK DEVELOPER NOT RESPONSIBLE FOR DAMAGES ARISING FROM USE OF THIS SOFTWARE.
 IT IS NOT GURANTEED THAT THIS TOOL WILL REMOVE ALL METADATA COMPLETELY. 
 DO NOT USE IN HIGH RISK SITUATIONS.
+
+# References :
+
+* https://freedom.press/training/everything-you-wanted-know-about-media-metadata-were-afraid-ask/
+* https://0xacab.org/jvoisin/mat2
+* https://web.archive.org/web/20180320050532/https://mat.boum.org/

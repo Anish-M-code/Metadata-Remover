@@ -5,7 +5,7 @@ A simple Metadata Removal Tool for removing metadata from images and videos. Dev
 
 <img src="https://user-images.githubusercontent.com/82881725/212539943-c7d1e178-5937-4c49-8665-e91408dc5902.JPG" width="677" height="345">
 
-Take back your Privacy Online by removing Identifiable Metadata before you post and reduce size of your images and videos.
+Take back your Privacy Online by removing Identifiable Metadata and reduce size of your images and videos before you post .
 
 <img src="https://user-images.githubusercontent.com/82881725/212539916-9c4386ba-a6f2-48d2-aa13-c523f33da46e.JPG">
 
@@ -17,11 +17,11 @@ Privacy is hard to get Nowadays , Removing unwanted metadata improves privacy.
 
 Reduced image and video size will be a boon for web devs while embedding images and videos in websites.
 
-# Support for Other Documents ( PDF/ Docx etc )
+# Support for Other Documents ( PDF/ Docx etc ) other than Images and Videos.
 
-This Tool doesnot support other Formats.
+Python version of metadata remover supports audio and torrent files .
 
-Use Document Inspector in Microsoft Office for Documents like docx , pptx etc .
+This Tool doesnot support any other Formats, however one can use Document Inspector in Microsoft Office for Documents like docx , pptx etc .
 
 For PDFs here is a small technique : https://outflaw.blogspot.com/2019/11/hiding-metadata-from-pdf-documents.html
 

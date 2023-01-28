@@ -5,7 +5,7 @@ A simple Metadata Removal Tool for removing metadata from images and videos. Dev
 
 <img src="https://user-images.githubusercontent.com/82881725/212539943-c7d1e178-5937-4c49-8665-e91408dc5902.JPG" width="677" height="345">
 
-Take back your Privacy Online by removing Identifiable Metadata before you post and reduce size of your images.
+Take back your Privacy Online by removing Identifiable Metadata before you post and reduce size of your images or videos.
 
 <img src="https://user-images.githubusercontent.com/82881725/212539916-9c4386ba-a6f2-48d2-aa13-c523f33da46e.JPG">
 
@@ -13,9 +13,9 @@ Removes Metadata which might expose your location or show which device you used 
 
 # Why is it important?
 
-Privacy is hard to get Nowadays.
+Privacy is hard to get Nowadays , Removing unwanted metadata improves privacy.
 
-Reduced image size will be a boon for web devs while embedding images in websites.
+Reduced image / video size will be a boon for web devs while embedding images / videos in websites.
 
 # Support for Other Documents ( PDF/ Docx etc )
 

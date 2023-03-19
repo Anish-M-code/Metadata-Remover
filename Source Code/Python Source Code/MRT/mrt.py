@@ -35,6 +35,9 @@ def autoexif():
 
 # Function to remove metadata from image file.
 def img(x):
+  if x.lower().endswith('.tiff') or x.lower().endswith('.tif'):
+    os.system("exiftool -all= -CommonIFD0= "+x)
+    return
   os.system("exiftool "+x+" -all=")
 
 # Function to remove metadata from video file. 
@@ -70,7 +73,7 @@ def singly(x,y,mode='n'):
    
  # should include function detect to detect exiftool [imp]
  if y.lower()=='i':
-   v=('.jpg','.gif','.bmp','.tiff','.jpeg','.png')
+   v=('.jpg','.gif','.bmp','.tiff','.jpeg','.png','.tif')
    for i in v:
     if x.lower().endswith(i):   
       os.system("exiftool "+x+">input.txt")

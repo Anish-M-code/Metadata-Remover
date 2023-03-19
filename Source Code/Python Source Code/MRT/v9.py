@@ -11,16 +11,26 @@ except ImportError:
 
 import os
 from shutil import move,copy
+import webbrowser as wb
+from sys import exit
+from time import sleep
 try:
     import mutagen
 except:
-    os.system('pip install mutagen')
+    x = os.system('py -m pip install mutagen')
+    if(x != 0):
+        wb.open('https://pypi.org/project/mutagen/')
+        print('Please install mutagen from https://pypi.org/project/mutagen/ ')
+        sleep(5)
+        exit(1)
+    print('please close and restart this program!!!')
+    sleep(5)
+    exit(1)
 
 # Function to display main menu()
 def san():
     cls()
     print('\n |------ Metadata Removal Tool ------|\n')
-    print(' Please select an option from the following:')
     print(' 1)Remove Metadata from a image.')
     print(' 2)Remove Metadata from a video.')
     print(' 3)Remove Metadata from a audio.')
@@ -28,8 +38,7 @@ def san():
     print(' 5)Remove Metadata from all images in folder.')
     print(' 6)Remove Metadata from all videos in folder.')
     print(' 7)View Metadata in a file.')
-    print(' c)Close.')
-    x=input('\n Enter command(1,2,3,4,5,6,7 or c):')
+    x=input('\n Enter command(1,2,3,4,5,6 or 7):')
     if x=='1':
         file=input('\n Enter image name:')
         singly(file,'i')
@@ -40,17 +49,28 @@ def san():
         file=input('\n Enter Audio File:')
         y=copy(file,'MRT')
         os.chdir('MRT')
-        os.system('py mat2.py '+file)
-        y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
-        os.remove(file)
+        z = os.system('py mat2.py '+file)
+        if( z!= 0):
+            print('Something went wrong , metadata was not cleaned!!!')
+            sleep(5)
+        else:
+            print('Metadata cleaned successfully !!!')
+            y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
+            os.remove(file)
+            sleep(5)
         os.chdir('..')
     elif x == '4':
         file=input('\n Enter Torrent File:')
         y=copy(file,'MRT')
         os.chdir('MRT')
-        os.system('py mat2.py '+file)
-        y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
-        os.remove(file)
+        z = os.system('py mat2.py '+file)
+        if( z!= 0):
+            print('Something went wrong , metadata was not cleaned!!!')
+        else:
+            print('Metadata cleaned successfully !!!')
+            y=move(file.split('.')[0]+'.cleaned.'+file.split('.')[1],'..')
+            os.remove(file)
+            sleep(5)
         os.chdir('..')
     elif x=='5':
         bulk()
@@ -68,6 +88,7 @@ def san():
         wait()
     elif x.lower()=='c' or x.lower()=='close':
         exit()
+    
 
-while(True):
+while True:
     san()

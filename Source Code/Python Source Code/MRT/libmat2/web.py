@@ -71,11 +71,6 @@ class HTMLParser(AbstractHTMLParser):
     tags_required_blocklist = {'title', }
 
 
-class DTBNCXParser(AbstractHTMLParser):
-    mimetypes = {'application/x-dtbncx+xml', }
-    tags_required_blocklist = {'title', 'doctitle', 'meta'}
-
-
 class _HTMLParser(parser.HTMLParser):
     """Python doesn't have a validating html parser in its stdlib, so
     we're using an internal queue to track all the opening/closing tags,

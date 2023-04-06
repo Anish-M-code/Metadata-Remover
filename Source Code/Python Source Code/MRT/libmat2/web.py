@@ -108,22 +108,6 @@ class _HTMLParser(parser.HTMLParser):
         """
         raise ValueError(message)
 
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]):
-        # Ignore the type, because mypy is too stupid to infer
-        # that get_starttag_text() can't return None.
-        original_tag = self.get_starttag_text()  # type: ignore
-        self.__validation_queue.append(original_tag)  # type: ignore
-
-        if tag in self.tag_blocklist:
-            self.__in_dangerous_tag += 1
-
-        if self.__in_dangerous_tag == 0:
-            if self.__in_dangerous_but_required_tag == 0:
-                self.__textrepr += original_tag
-
-        if tag in self.tag_required_blocklist:
-            self.__in_dangerous_but_required_tag += 1
-
     def handle_endtag(self, tag: str):
         if not self.__validation_queue:
             raise ValueError("The closing tag %s doesn't have a corresponding "

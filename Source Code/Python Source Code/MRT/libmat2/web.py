@@ -71,11 +71,6 @@ class HTMLParser(AbstractHTMLParser):
     tags_required_blocklist = {'title', }
 
 
-class DTBNCXParser(AbstractHTMLParser):
-    mimetypes = {'application/x-dtbncx+xml', }
-    tags_required_blocklist = {'title', 'doctitle', 'meta'}
-
-
 class _HTMLParser(parser.HTMLParser):
     """Python doesn't have a validating html parser in its stdlib, so
     we're using an internal queue to track all the opening/closing tags,
@@ -112,69 +107,6 @@ class _HTMLParser(parser.HTMLParser):
             NotImplementedError: subclasses of ParserBase must override error()
         """
         raise ValueError(message)
-
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]):
-        # Ignore the type, because mypy is too stupid to infer
-        # that get_starttag_text() can't return None.
-        original_tag = self.get_starttag_text()  # type: ignore
-        self.__validation_queue.append(original_tag)  # type: ignore
-
-        if tag in self.tag_blocklist:
-            self.__in_dangerous_tag += 1
-
-        if self.__in_dangerous_tag == 0:
-            if self.__in_dangerous_but_required_tag == 0:
-                self.__textrepr += original_tag
-
-        if tag in self.tag_required_blocklist:
-            self.__in_dangerous_but_required_tag += 1
-
-    def handle_endtag(self, tag: str):
-        if not self.__validation_queue:
-            raise ValueError("The closing tag %s doesn't have a corresponding "
-                             "opening one in %s." % (tag, self.filename))
-
-        previous_tag = self.__validation_queue.pop()
-        previous_tag = previous_tag[1:-1]  # remove < and >
-        previous_tag = previous_tag.split(' ')[0]  # remove attributes
-        if tag != previous_tag.lower():
-            raise ValueError("The closing tag %s doesn't match the previous "
-                             "tag %s in %s" %
-                             (tag, previous_tag, self.filename))
-
-        if tag in self.tag_required_blocklist:
-            self.__in_dangerous_but_required_tag -= 1
-
-        if self.__in_dangerous_tag == 0:
-            if self.__in_dangerous_but_required_tag == 0:
-                # There is no `get_endtag_text()` method :/
-                self.__textrepr += '</' + previous_tag + '>'
-
-        if tag in self.tag_blocklist:
-            self.__in_dangerous_tag -= 1
-
-    def handle_data(self, data: str):
-        if self.__in_dangerous_but_required_tag == 0:
-            if self.__in_dangerous_tag == 0:
-                if data.strip():
-                    self.__textrepr += escape(data)
-
-    def handle_startendtag(self, tag: str,
-                           attrs: List[Tuple[str, Optional[str]]]):
-        if tag in self.tag_required_blocklist | self.tag_blocklist:
-            meta = {k:v for k, v in attrs}
-            name = meta.get('name', 'harmful metadata')
-            content = meta.get('content', 'harmful data')
-            self.__meta[name] = content
-
-            if self.__in_dangerous_tag == 0:
-                if tag in self.tag_required_blocklist:
-                    self.__textrepr += '<' + tag + ' />'
-                return
-
-        if self.__in_dangerous_tag == 0:
-            if self.__in_dangerous_but_required_tag == 0:
-                self.__textrepr += self.get_starttag_text()
 
     def remove_all(self, output_filename: str) -> bool:
         if self.__validation_queue:

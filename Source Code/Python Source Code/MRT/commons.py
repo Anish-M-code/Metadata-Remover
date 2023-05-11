@@ -1,125 +1,99 @@
 # flag=imp
 
-""" 
-This is the common library developed to satisfy the needs of  commandline python applications .
-It contains necessary  std libraries and basic functions for  its users.
-"""
+# Comment from 9x14S: variable assignment to input() statements only to require
+# input before an action are irrelevant. 
 
+# This is the "root" module, it doesn't import any other from the package, so start from
+# here if you want to modify it heavily
+
+# This is the common library developed to satisfy the needs of commandline python applications .
+# It contains necessary std libraries and basic functions for its users.
+
+'''Functions used: 
+fileRemove
+packageDetect
+taskStart/End/Fail
+wait
+printFile
+copyFile
+checkDependencies
+cls
+'''
 try:
-    import hashlib
-    import time
-    import platform
-    import os
-    import getpass
-    import webbrowser
+    # Are ALL these modules actually used?
+    import hashlib, time, os, platform, webbrowser, getpass, shutil
 
 except ImportError:
-    print("Critical Error: Necessary Python Modules are missing!")
-    print("Commons module couldnot satisfy all the dependencies!")
-    x = input("\nPress any key to exit...")
+    # Deleted redundant second print function and unaccessed variable (x) to input function, 
+    # for which it is not needed
+    print("Critical Error: Necessary Python Modules are missing! \nCommons module couldnot satisfy all the dependencies!")
+    input("Press any key to exit...")
     exit()
 
-
 # Deletes file after checking if it exists or not.
-def r(f):
-    if os.path.exists(f):
-        os.remove(f)
+def fileRemove(file):
+    if os.path.exists(file):
+        os.remove(file)
 
-
-# Function to open website if prerequisite software is not found in PC.
-def detect(cmd, web, snam, pkg):
-
-    if os.name == "nt": # checks if os is windows
+# Function to open website if prerequisite software is not found,
+def packageDetect(cmd, webSite, shortName, package):
+    if OS: # checks if os is windows
         if os.system(cmd + ">chk") != 0:
             os.system("cls")
             print(cmd)
-            print("\nError: " + pkg + " is not detected!")
-            print(
-                "\nPlease wait opening "
-                + snam
-                + " website in your browser!\nYou Have to download and install it.\n"
-            )
-            webbrowser.open(web)
-            x = input("\nPress any key to exit...")
-            r("chk")
+            print(f"\nError: {package} is not detected!")
+            print(f"\nA webpage to {shortName} is being opened. ")
+            webbrowser.open(webSite)
+            wait()
+            fileRemove("chk")
             exit()
-
     else:
         if os.system(cmd + ">chk") != 0:
             os.system("clear")
-            print(
-                "\nError:"
-                + pkg
-                + " is not detected!\n Please install The package to continue."
-            )
-            x = input("\nPress any key to exit...")
-            r("chk")
+            print(f"\nError: {package} is not detected!")
+            wait()
+            fileRemove("chk")
             exit()
-    r("chk")
 
-
-def start():
+# These four functions could be replaced for something better maybe
+def taskStart():
     print("\n<-----Task Started----->\n")
-
-
-def end():
+def taskEnd():
     print("\n<-----Task Completed----->\n")
-
-
-def tsks():
-    start()
-
-
-def tske():
-    end()
-
-
-def tskf():
+def taskFail():
     print("\n<-----Task Failed !----->\n")
-
-
 def wait():
-    x = input("\nPress any key to continue...\n")
-
+    input("\nPress any key to continue...\n")
 
 # Function to Display contents of text file.
-def display(file):
+def printFile(file):
     with open(file, "r") as f:
+        # This should be replaced with the like of a do-while loop
         s = f.read(1024)
         print(s)
         while len(s) > 0:
             s = f.read(1024)
             print(s)
 
-
-def gpg():
-    detect("gpg --version", "https://gpg4win.org", "gpg4win", "Gnupg")
-
-
-def exiftool():
-    detect("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
-
-
-def ffmpeg():
-    detect("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
-
+def checkDependencies():
+    packageDetect("gpg --version", "https://gpg4win.org", "gpg4win", "Gnupg")
+    packageDetect("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
+    packageDetect("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
 
 # Function to copy textfile.
-def copy(file, file1):
-    if os.path.exists(file):
-        f = open(file, "r")
-        s = open(file1, "a+")
-        if os.path.getsize(file) < (1024 * 1024 * 1024):
-            buff = f.read()
-            s.write("\n-------------------------------------------------------\n")
-            s.write(buff)
-        f.close()
-        s.close()
-
-
-# Clearscreen
+def copyFile(fileIn, fileOut):
+    if os.path.exists(fileIn):
+        shutil.copy(fileIn, fileOut)
+        
+# Clear the screen depending on the OS
 def cls():
-    if platform.system().lower() == "windows":
+    if OS:
         os.system("cls")
     else:
         os.system("clear")
+
+# To save time, do the computation once and then use boolean values
+if os.name == "nt":
+    OS = True
+else:
+    OS = False

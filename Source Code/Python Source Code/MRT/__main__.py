@@ -1,2 +1,2 @@
 import v9
-v9.san()
+v9.mainV9()

@@ -27,18 +27,18 @@ logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.WARNING)
 
 def __check_file(filename: str, mode: int = os.R_OK) -> bool:
     if not os.path.exists(filename):
-        print("[-] %s doesn't exist." % filename)
+        print("[-] {} doesn't exist.".format(filename))
         return False
     elif not os.path.isfile(filename):
-        print("[-] %s is not a regular file." % filename)
+        print("[-] {} is not a regular file.".format(filename))
         return False
     elif not os.access(filename, mode):
         mode_str = []  # type: List[str]
-        if mode & os.R_OK:
+        if mode and os.R_OK:
             mode_str += "readable"
-        if mode & os.W_OK:
+        if mode and os.W_OK:
             mode_str += "writeable"
-        print("[-] %s is not %s." % (filename, "nor ".join(mode_str)))
+        print("[-] {} is not {}.".format(filename, "nor ".join(mode_str)))
         return False
     return True
 
@@ -74,7 +74,7 @@ def create_arg_parser() -> argparse.ArgumentParser:
     excl_group = parser.add_mutually_exclusive_group()
     excl_group.add_argument("files", nargs="*", help="the files to process", default=[])
     excl_group.add_argument(
-        "-v", "--version", action="version", version="mat2 %s" % __version__
+        "-v", "--version", action="version", version="mat2 {}".format(__version__)
     )
     excl_group.add_argument(
         "-l",
@@ -111,10 +111,10 @@ def show_meta(filename: str, sandbox: bool):
     try:
         p, mtype = parser_factory.get_parser(filename)  # type: ignore
     except ValueError as e:
-        print("[-] something went wrong when processing %s: %s" % (filename, e))
+        print("[-] something went wrong when processing {}: {}".format(filename, e))
         return
     if p is None:
-        print("[-] %s's format (%s) is not supported" % (filename, mtype))
+        print("[-] {}'s format ({}) is not supported".format(filename, mtype))
         return
     p.sandbox = sandbox
     __print_meta(filename, p.get_meta())
@@ -123,10 +123,10 @@ def show_meta(filename: str, sandbox: bool):
 def __print_meta(filename: str, metadata: dict, depth: int = 1):
     padding = " " * depth * 2
     if not metadata:
-        print(padding + "No metadata found in %s." % filename)
+        print(padding + "No metadata found in {}.".format(filename))
         return
 
-    print("[%s] Metadata for %s:" % ("+" * depth, filename))
+    print("[{}] Metadata for {}:".format("+" * depth, filename))
 
     for (k, v) in sorted(metadata.items()):
         if isinstance(v, dict):
@@ -142,9 +142,9 @@ def __print_meta(filename: str, metadata: dict, depth: int = 1):
             pass  # for things that aren't iterable
 
         try:  # FIXME this is ugly.
-            print(padding + "  %s: %s" % (k, v))
+            print(padding + "  {}: {}".format(k, v))
         except UnicodeEncodeError:
-            print(padding + "  %s: harmful content" % k)
+            print(padding + "  {}: harmful content".format(k))
 
 
 def clean_meta(
@@ -161,17 +161,18 @@ def clean_meta(
     try:
         p, mtype = parser_factory.get_parser(filename)  # type: ignore
     except ValueError as e:
-        print("[-] something went wrong when cleaning %s: %s" % (filename, e))
+        print("[-] something went wrong when cleaning {}: {}".format(filename, e))
         return False
     if p is None:
-        print("[-] %s's format (%s) is not supported" % (filename, mtype))
+        print("[-] {}'s format ({}) is not supported".format(filename, mtype))
         return False
     p.unknown_member_policy = policy
     p.lightweight_cleaning = is_lightweight
     p.sandbox = sandbox
 
     try:
-        logging.debug("Cleaning %s…", filename)
+        # Does this try to format the string or does it actually pass filename as a second argument?
+        logging.debug("Cleaning {}…".format(filename))
         ret = p.remove_all()
         if ret is True:
             shutil.copymode(filename, p.output_filename)
@@ -179,7 +180,7 @@ def clean_meta(
                 os.rename(p.output_filename, filename)
         return ret
     except RuntimeError as e:
-        print("[-] %s can't be cleaned: %s" % (filename, e))
+        print("[-] {} can't be cleaned: {}".format(filename, e))
     return False
 
 
@@ -196,7 +197,7 @@ def show_parsers():
                 # we're not supporting a single extension in the current
                 # mimetype, so there is not point in showing the mimetype at all
                 continue
-            formats.add("  - %s (%s)" % (mtype, ", ".join(extensions)))
+            formats.add("  - {} ({})".format(mtype, ", ".join(extensions)))
     print("\n".join(sorted(formats)))
 
 
@@ -226,11 +227,10 @@ def main() -> int:
             show_parsers()
             return 0
         elif args.check_dependencies:
-            print("Dependencies for mat2 %s:" % __version__)
+            print("Dependencies for mat2 {}:".format(__version__))
             for key, value in sorted(check_dependencies().items()):
                 print(
-                    "- %s: %s %s"
-                    % (
+                    "- {}: {} {}".format(
                         key,
                         "yes" if value["found"] else "no",
                         "(optional)" if not value["required"] else "",

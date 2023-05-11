@@ -120,7 +120,7 @@ class _BencodeHandler:
         try:
             ret, trail = self.__decode_func[s[0]](s)
         except (IndexError, KeyError, ValueError) as e:
-            logging.warning("Not a valid bencoded string: %s", e)
+            logging.warning("Not a valid bencoded string: {}".format(e))
             return None
         if trail != b'':
             logging.warning("Invalid bencoded value (data after valid prefix)")

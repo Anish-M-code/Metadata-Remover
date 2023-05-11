@@ -32,13 +32,13 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
           so we need to add callbacks erverywhere to allow their respective
           parsers to apply specific cleanup to the required files.
         - Python has two different modules to deal with .tar and .zip files,
-          with similar-but-yet-o-so-different API, so we need to write
+          with similar-but-yet-no-so-different API, so we need to write
           a ghetto-wrapper to avoid duplicating everything
         - The combination of @staticmethod and @abstractstaticmethod is
           required because for now, mypy doesn't know that
           @abstractstaticmethod is, indeed, a static method.
         - Mypy is too dumb (yet) to realise that a type A is valid under
-          the Union[A, B] constrain, hence the weird `#  type: ignore`
+          the Union[A, B] constraint, hence the weird `#  type: ignore`
           annotations.
     """
     # Tarfiles can optionally support compression
@@ -199,8 +199,8 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
                 original_compression = self._get_member_compression(item)
 
                 if self._specific_cleanup(full_path) is False:
-                    logging.warning("Something went wrong during deep cleaning of %s",
-                                    member_name)
+                    logging.warning("Something went wrong during deep cleaning of {}".format(
+                        member_name))
                     abort = True
                     continue
 
@@ -213,24 +213,24 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
                     member_parser, mtype = parser_factory.get_parser(full_path)  # type: ignore
                     if not member_parser:
                         if self.unknown_member_policy == UnknownMemberPolicy.OMIT:
-                            logging.warning("In file %s, omitting unknown element %s (format: %s)",
-                                            self.filename, member_name, mtype)
+                            logging.warning("In file {}, omitting unknown element {} (format: {})".format(
+                                            self.filename, member_name, mtype))
                             continue
                         elif self.unknown_member_policy == UnknownMemberPolicy.KEEP:
-                            logging.warning("In file %s, keeping unknown element %s (format: %s)",
-                                            self.filename, member_name, mtype)
+                            logging.warning("In file {}, keeping unknown element {} (format: {})".format(
+                                            self.filename, member_name, mtype))
                         else:
-                            logging.error("In file %s, element %s's format (%s) "
-                                          "isn't supported",
-                                          self.filename, member_name, mtype)
+                            logging.error("In file {}, element {}'s format ({}) "
+                                          "isn't supported".format(
+                                          self.filename, member_name, mtype))
                             abort = True
                             continue
                     else:
                         if member_parser.remove_all() is False:
-                            logging.warning("In file %s, something went wrong \
-                                             with the cleaning of %s \
-                                             (format: %s)",
-                                            self.filename, member_name, mtype)
+                            logging.warning("In file {}, something went wrong \
+                                             with the cleaning of {} \
+                                             (format: {})".format(
+                                            self.filename, member_name, mtype))
                             abort = True
                             continue
                         os.rename(member_parser.output_filename, full_path)
@@ -280,41 +280,41 @@ class TarParser(ArchiveBasedAbstractParser):
         for member in members:
             name = member.name
             if os.path.isabs(name):
-                raise ValueError("The archive %s contains a file with an " \
-                        "absolute path: %s" % (self.filename, name))
+                raise ValueError("The archive {} contains a file with an " \
+                        "absolute path: {}".format(self.filename, name))
             elif os.path.normpath(name).startswith('../') or '/../' in name:
-                raise ValueError("The archive %s contains a file with an " \
-                        "path traversal attack: %s" % (self.filename, name))
+                raise ValueError("The archive {} contains a file with an " \
+                        "path traversal attack: {}".format(self.filename, name))
 
             if name in names:
-                raise ValueError("The archive %s contains two times the same " \
-                        "file: %s" % (self.filename, name))
+                raise ValueError("The archive {} contains two times the same " \
+                        "file: {}".format(self.filename, name))
             else:
                 names.add(name)
 
             if member.isfile():
                 if member.mode & stat.S_ISUID:
-                    raise ValueError("The archive %s contains a setuid file: %s" % \
+                    raise ValueError("The archive {} contains a setuid file: {}".format\
                         (self.filename, name))
                 elif member.mode & stat.S_ISGID:
-                    raise ValueError("The archive %s contains a setgid file: %s" % \
+                    raise ValueError("The archive {} contains a setgid file: {}".format\
                             (self.filename, name))
             elif member.issym():
                 linkname = member.linkname
                 if os.path.normpath(linkname).startswith('..'):
-                    raise ValueError('The archive %s contains a symlink pointing' \
-                            'outside of the archive via a path traversal: %s -> %s' % \
+                    raise ValueError('The archive {} contains a symlink pointing' \
+                            'outside of the archive via a path traversal: {} -> {}'.format\
                             (self.filename, name, linkname))
                 if os.path.isabs(linkname):
-                    raise ValueError('The archive %s contains a symlink pointing' \
-                            'outside of the archive: %s -> %s' % \
+                    raise ValueError('The archive {} contains a symlink pointing' \
+                            'outside of the archive: {} -> {}'.format\
                             (self.filename, name, linkname))
             elif member.isdev():
-                raise ValueError("The archive %s contains a non-regular " \
-                        "file: %s" % (self.filename, name))
+                raise ValueError("The archive {} contains a non-regular " \
+                        "file: {}" .format(self.filename, name))
             elif member.islnk():
-                raise ValueError("The archive %s contains a hardlink: %s" \
-                        % (self.filename, name))
+                raise ValueError("The archive {} contains a hardlink: {}" \
+                        .format(self.filename, name))
 
     @staticmethod
     def _clean_member(member: ArchiveMember) -> ArchiveMember:

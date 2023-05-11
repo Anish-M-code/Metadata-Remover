@@ -110,7 +110,7 @@ class _HTMLParser(parser.HTMLParser):
 
     def remove_all(self, output_filename: str) -> bool:
         if self.__validation_queue:
-            raise ValueError("Some tags (%s) were left unclosed in %s" % (
+            raise ValueError("Some tags ({}) were left unclosed in {}".format(
                 ', '.join(self.__validation_queue),
                 self.filename))
         with open(output_filename, 'w', encoding='utf-8') as f:
@@ -119,7 +119,7 @@ class _HTMLParser(parser.HTMLParser):
 
     def get_meta(self) -> Dict[str, Any]:
         if self.__validation_queue:
-            raise ValueError("Some tags (%s) were left unclosed in %s" % (
+            raise ValueError("Some tags ({}) were left unclosed in {}".format(
                 ', '.join(self.__validation_queue),
                 self.filename))
         return self.__meta

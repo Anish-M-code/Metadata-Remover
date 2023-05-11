@@ -1,105 +1,109 @@
 # flag=imp
 
+'''Functions used:
+singly (from )
+bulk (from )
+meta (from )
+success
+mainV9
+checkDependencies (from commons)
+wait (from commons)
+cls (from commons)
+
+'''
+
+from sys import exit
+from time import sleep
+from shutil import move, copy
+
+import webbrowser as wb
+import os
+
 try:
     from commons import *
     from mrt import *
-
+    
 except ImportError:
-    print(" Critical Error :Required Modules were not Found!")
-    x = input("\n Press any key to exit...")
+    print("Critical Error: required modules were not Found!")
+    wait()
     exit()
 
-import os
-from shutil import move, copy
-import webbrowser as wb
-from sys import exit
-from time import sleep
-
-
-
 try:
+    # What's the point of mutagen if it isn't accessed?
     import mutagen
 except:
-    x = os.system("py -m pip install mutagen")
-    if x != 0:
-        wb.open("https://pypi.org/project/mutagen/")
-        print("Please install mutagen from https://pypi.org/project/mutagen/ ")
+    if input("The module mutagen has not been found, want to install it [y/n]?: ").lower() == "y":
+        os.system("py -m pip install mutagen")
+    else:
+        print("Please install mutagen from https://pypi.org/project/mutagen/ and then run this program again. ")
         sleep(5)
         exit(1)
-    print("please close and restart this program!!!")
+    print("This program will now close, restart once it installs for the changes to have effect. ")
     sleep(5)
     exit(1)
 
-# Function to display main menu()
-def san():
+def success(file):
+    print("The metadata was cleaned successfully. ")
+    splitFile = file.split(".")
+    move(splitFile[0] + ".cleaned." + splitFile[1], "..")
+    os.remove(file)
+    sleep(5)
+    
+# Main function of the program
+def mainV9():
     cls()
     print("\n |------ Metadata Removal Tool ------|\n")
-    print(" 1)Remove Metadata from a image.")
-    print(" 2)Remove Metadata from a video.")
-    print(" 3)Remove Metadata from a audio.")
-    print(" 4)Remove Metadata from a Torrent.")
-    print(" 5)Remove Metadata from all images in folder.")
-    print(" 6)Remove Metadata from all videos in folder.")
+    print(" 1)Remove Metadata from an image file.")
+    print(" 2)Remove Metadata from a video file.")
+    print(" 3)Remove Metadata from an audio file.")
+    print(" 4)Remove Metadata from a Torrent file.")
+    print(" 5)Remove Metadata from all images in a folder.")
+    print(" 6)Remove Metadata from all videos in a folder.")
     print(" 7)View Metadata in a file.")
-    x = input("\n Enter command(1,2,3,4,5,6 or 7):")
-    if x == "1":
-        file = input("\n Enter image name:")
-        singly(file, "i")
-    elif x == "2":
-        file = input("\n Enter Video name:")
-        singly(file, "v")
-    elif x == "3":
-        file = input("\n Enter Audio File:")
-        y = copy(file, "MRT")
-        os.chdir("MRT")
-        z = os.system("py mat2.py " + file)
-        if z != 0:
-            print("Something went wrong , metadata was not cleaned!!!")
-            sleep(5)
-        else:
-            print("Metadata cleaned successfully !!!")
-            y = move(file.split(".")[0] + ".cleaned." + file.split(".")[1], "..")
-            os.remove(file)
-            sleep(5)
-        os.chdir("..")
-    elif x == "4":
-        file = input("\n Enter Torrent File:")
-        y = copy(file, "MRT")
-        os.chdir("MRT")
-        z = os.system("py mat2.py " + file)
-        if z != 0:
-            print("Something went wrong , metadata was not cleaned!!!")
-        else:
-            print("Metadata cleaned successfully !!!")
-            y = move(file.split(".")[0] + ".cleaned." + file.split(".")[1], "..")
-            os.remove(file)
-            sleep(5)
-        os.chdir("..")
-    elif x == "5":
-        bulk("i")
-    elif x == "6":
-        bulk("v")
-    elif x == "7":
-        rb = input(" Enter Filename:")
-        if os.path.exists(rb) == False:
-            print("\n File Not Found!\n")
-            wait()
-            san()
-            exit(0)
-        meta(rb)
-        wait()
-    elif x.lower() == "c" or x.lower() == "close":
-        exit()
+    menuSelection = input("\nEnter selection number:")
+    # I preferred to use the match function instead of chaining if-elif statements
+    # as I believe it looks better and functionally it is the same.
+    match menuSelection:
+        case "1":
+            file = input("\n Enter image name:")
+            singly(file, "i")
+        case "2":
+            file = input("\n Enter Video name:")
+            singly(file, "v")
+        case "3":
+            file = input("\n Enter Audio File:")
+            copy(file, f".{os.path.sep}MRT")
+            os.chdir("MRT")
+            if not os.system("py mat2.py " + file):
+                print("Something went wrong. Possibly the metadata was not cleaned. Please try again. ")
+                sleep(5)
+            else:
+                success(file)
+            os.chdir("..")
+        case "4":
+            file = input("\n Enter Torrent File:")
+            copy(file, "MRT")
+            os.chdir("MRT")
+            if not os.system("py mat2.py " + file):
+                print("Something went wrong, the metadata was not removed.")
+            else:
+                success(file)
+            os.chdir("..")
+        case "5":
+            bulk("i")
+        case "6":
+            bulk("v")
+        case "7":
+            file = input("Enter file name or path: ")
+            if not os.path.exists(file):
+                print("\n File Not Found!\n")
+                wait()
+                exit(0)
+            metaView(file)
+            wait() 
+# Perform checks to make sure ffmpeg, gpg and exiftool exist
+checkDependencies()
 
-# Perform checks to make sure ffmpeg and exiftool exist
-ffmpeg()
-exiftool()
-
-# Get current working directory so we can return to it after san()
-current = os.getcwd()
-
-while True:
-
-    san()
-    # Reset working dir
-    os.chdir(current)
+# The main function only needs to be run once, and the current working directory resets automatically
+# after the program ends, so no reason for it to be changed back.
+mainV9()

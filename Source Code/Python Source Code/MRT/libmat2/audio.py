@@ -71,7 +71,7 @@ class FLACParser(MutagenParser):
     def get_meta(self) -> Dict[str, Union[str, dict]]:
         meta = super().get_meta()
         for num, picture in enumerate(mutagen.File(self.filename).pictures):
-            name = picture.desc if picture.desc else 'Cover %d' % num
+            name = picture.desc if picture.desc else 'Cover {}'.format(num)
             extension = mimetypes.guess_extension(picture.mime)
             if extension is None:  #  pragma: no cover
                 meta[name] = 'harmful data'
@@ -86,5 +86,3 @@ class FLACParser(MutagenParser):
             meta[name] = p.get_meta() if p else 'harmful data'  # type: ignore
             os.remove(fname)
         return meta
-
-

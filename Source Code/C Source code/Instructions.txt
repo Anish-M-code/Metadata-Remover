@@ -12,7 +12,7 @@ The file extension of this will be something like ".JPG_ORIGNAL" or ."PNG_ORIGIN
 
 1) Put all images in Images Folder.
 2) Click run.exe.
-3) In the menu, yype 1 to select image sanitization.
+3) In the menu, type 1 to select image sanitization.
 4) Program will ask 'Enter Image name:'. Enter a single image file name which is inside the Images Folder (file extension included).
 
 Example: If a.jpg is in Images Folder, when program prompts you "Enter Image name:", you will type in "a.jpg" (without quotation marks).

@@ -21,7 +21,7 @@ Reduced image and video size will be a boon for web devs while embedding images 
 
 Python version of metadata remover supports audio and torrent files .
 
-This Tool doesnot support any other Formats, however one can use Document Inspector in Microsoft Office for Documents like docx , pptx etc .
+This Tool does not support any other Formats, however one can use Document Inspector in Microsoft Office for Documents like docx , pptx etc .
 
 For PDFs here is a small technique : https://outflaw.blogspot.com/2019/11/hiding-metadata-from-pdf-documents.html
 

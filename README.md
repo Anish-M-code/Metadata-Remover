@@ -1,5 +1,5 @@
 # Metadata-Remover
-A simple Metadata Removal Tool for removing metadata from images and videos. Developed in C and Python3.
+A simple Metadata Removal Tool for removing metadata from images and videos. Developed using C and Python3.
 
 # Whats the Use?
 
@@ -13,15 +13,15 @@ Removes Metadata which might expose your location or show which device you used 
 
 # Why is it important?
 
-Privacy is hard to get Nowadays , Removing unwanted metadata improves privacy.
+Privacy is hard to get nowadays, removing unwanted metadata improves privacy.
 
-Reduced image and video size will be a boon for web devs while embedding images and videos in websites.
+Reduced image and video size will be a boon for web developers while embedding images and videos in websites.
 
 # Support for Other Documents ( PDF/ Docx etc ) other than Images and Videos.
 
 Python version of metadata remover supports audio and torrent files .
 
-This Tool does not support any other Formats, however one can use Document Inspector in Microsoft Office for Documents like docx , pptx etc .
+This Tool does not support any other format, however one can use Document Inspector in Microsoft Office for Documents like docx, pptx etc .
 
 For PDFs here is a small technique : https://outflaw.blogspot.com/2019/11/hiding-metadata-from-pdf-documents.html
 

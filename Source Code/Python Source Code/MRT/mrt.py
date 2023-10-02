@@ -203,5 +203,5 @@ def bulk(filetype):
     end()
 
 if __name__ == "__main__":
-    print("\n |----- MRT module stable release version 0.2.4 ----|")
+    print("\n ┣━━━━━ MRT module stable release version 0.2.4 ━━━━━┫")
     wait()

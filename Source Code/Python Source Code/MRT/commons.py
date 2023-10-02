@@ -79,7 +79,7 @@ def tskf():
 
 
 def wait():
-    x = input("\nPress any key to continue...\n")
+    x = input("\nPress Enter to continue...\n")
 
 
 # Function to Display contents of text file.

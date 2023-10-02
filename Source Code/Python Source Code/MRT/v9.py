@@ -33,7 +33,7 @@ except:
 # Function to display main menu()
 def san():
     cls()
-    print("\n |------ Metadata Removal Tool ------|\n")
+    print("\n ┣-━━━━━ Metadata Removal Tool ------|\n")
     print(" 1)Remove Metadata from a image.")
     print(" 2)Remove Metadata from a video.")
     print(" 3)Remove Metadata from a audio.")

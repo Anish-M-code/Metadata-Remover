@@ -15,8 +15,8 @@ try:
 
 except ImportError:
     print("Critical Error: Necessary Python Modules are missing!")
-    print("Commons module couldnot satisfy all the dependencies!")
-    x = input("\nPress any key to exit...")
+    print("Commons module could not satisfy all the dependencies!")
+    x = input("\nPress Enter to exit...")
     exit()
 
 
@@ -50,20 +50,20 @@ def detect(cmd, web, snam, pkg):
             print(
                 "\nError:"
                 + pkg
-                + " is not detected!\n Please install The package to continue."
+                + " is not detected!\n Please install the package to continue."
             )
-            x = input("\nPress any key to exit...")
+            x = input("\nPress Enter to exit...")
             r("chk")
             exit()
     r("chk")
 
 
 def start():
-    print("\n<-----Task Started----->\n")
+    print("\n┣━━━━━ Task Started ━━━━━┫\n")
 
 
 def end():
-    print("\n<-----Task Completed----->\n")
+    print("\n┣━━━━━ Task Completed ━━━━━┫\n")
 
 
 def tsks():
@@ -75,7 +75,7 @@ def tske():
 
 
 def tskf():
-    print("\n<-----Task Failed !----->\n")
+    print("\n┣━━━━━ Task Failed! ━━━━━┫\n")
 
 
 def wait():

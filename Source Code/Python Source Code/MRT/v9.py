@@ -33,23 +33,25 @@ except:
 # Function to display main menu()
 def san():
     cls()
-    print("\n ┣-━━━━━ Metadata Removal Tool ------|\n")
-    print(" 1)Remove Metadata from a image.")
-    print(" 2)Remove Metadata from a video.")
-    print(" 3)Remove Metadata from a audio.")
-    print(" 4)Remove Metadata from a Torrent.")
-    print(" 5)Remove Metadata from all images in folder.")
-    print(" 6)Remove Metadata from all videos in folder.")
-    print(" 7)View Metadata in a file.")
-    x = input("\n Enter command(1,2,3,4,5,6 or 7):")
+    print(" ╔═══════════════════════════════════╗ ")
+    print(" ║       Metadata Removal Tool       ║ ")
+    print(" ╚═══════════════════════════════════╝\n")
+    print(" 1 ▸ Remove Metadata from an image.")
+    print(" 2 ▸ Remove Metadata from a video.")
+    print(" 3 ▸ Remove Metadata from an audio.")
+    print(" 4 ▸ Remove Metadata from a Torrent.")
+    print(" 5 ▸ Remove Metadata from all images in folder.")
+    print(" 6 ▸ Remove Metadata from all videos in folder.")
+    print(" 7 ▸ View Metadata in a file.")
+    x = input("\n Enter command (1, 2, 3, 4, 5, 6 or 7) : ")
     if x == "1":
-        file = input("\n Enter image name:")
+        file = input("\n Enter Image name: ")
         singly(file, "i")
     elif x == "2":
-        file = input("\n Enter Video name:")
+        file = input("\n Enter Video name: ")
         singly(file, "v")
     elif x == "3":
-        file = input("\n Enter Audio File:")
+        file = input("\n Enter Audio File: ")
         y = copy(file, "MRT")
         os.chdir("MRT")
         z = os.system("py mat2.py " + file)
@@ -80,7 +82,7 @@ def san():
     elif x == "6":
         bulk("v")
     elif x == "7":
-        rb = input(" Enter Filename:")
+        rb = input(" Enter Filename: ")
         if os.path.exists(rb) == False:
             print("\n File Not Found!\n")
             wait()

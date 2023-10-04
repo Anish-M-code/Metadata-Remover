@@ -50,7 +50,7 @@ void vchecker()
     check=system(eff);
     if(check!=0)
     {
-        printf("\n\nOutput.txt couldnot be created!\nmaybe exiftool is missing or u don't have user permissions or\nSomething went wrong like you entering a non image file!");
+        printf("\n\nOutput.txt could not be created!\nmaybe exiftool is missing or you don't have user permissions or\nSomething went wrong like you entering a non image file!");
         system("start https://exiftool.org");
         pause();
         exit(0);
@@ -61,7 +61,7 @@ void vchecker()
 void input()
     {
       system("cls");
-        printf("\n\t|---------Image Sanitisation Tool ---------|\n");
+        printf("\n\t┣━━━━━ Image Sanitisation Tool ━━━━━┫\n");
         printf("\n\n Enter Image name:");
         scanf("%30s",fil);
         memcpy(file,"Images\\",8);file[8]='\0';
@@ -238,7 +238,7 @@ void vinput()
 {
     /* Gets input ( filename ) for removal  of metadata from videos*/
     system("cls");
-    printf("\n\t |----- Video sanitisation tool -----|\n");
+    printf("\n\t ┣━━━━━ Video sanitisation tool ━━━━━┫\n");
     printf("\n\n Enter Video name:");
     scanf("%30s",vfil);
         memcpy(vfile,"Videos\\",8);vfile[8]='\0';
@@ -268,7 +268,7 @@ void vtool()
     if(f==NULL)
     {
         printf("\n\n Critical Error: FFMPEG.EXE NOT FOUND!");
-        printf("\n\n<------ Video Sanitization Failed! ----->\n");
+        printf("\n\n┣━━━━━ Video Sanitization Failed! ━━━━━┫\n");
         printf("\n\n");
         system("timeout 10");
         system("cls");
@@ -293,7 +293,7 @@ void vsanitise()
     status=system(buffer);
     if(status!=0)
     {
-        printf("\n\n :(  <---Video Sanitization Failed!--->");
+        printf("\n\n :(  ┣━━━━━ Video Sanitization Failed! ━━━━━┫");
     }
 
 }
@@ -313,9 +313,11 @@ void qrun()
 void menu()
 {
     int raw=0,backdoor=0;
-    printf("\n\t|----- Menu -----|\n\n");
-    printf("\n 1)Sanitize images using exiftool\n");
-    printf(" 2)Sanitize video files using ffmpeg\n");
+    printf(" ╔═══════════════════════════════════╗ ");
+    printf(" ║       Metadata Removal Tool       ║ ");
+    printf(" ╚═══════════════════════════════════╝\n");
+    printf("\n 1 ▸ Sanitize images using exiftool\n");
+    printf(" 2 ▸ Sanitize video files using ffmpeg\n");
     while(1)
     {
      printf("\n Enter Your choice( 1 or 2):");

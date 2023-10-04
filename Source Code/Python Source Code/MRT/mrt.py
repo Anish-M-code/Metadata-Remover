@@ -182,7 +182,7 @@ def singly(x, y, mode="n"):
 # Function to remove metadata of all images (filetype = i) or videos (filetype = v) from folder.
 def bulk(filetype):
     start()
-    loc = input(" Enter Folder:")
+    loc = input(" Enter Folder: ")
     os.chdir(loc)
     for i in os.listdir():
       singly(i, filetype, "b")
@@ -203,5 +203,5 @@ def bulk(filetype):
     end()
 
 if __name__ == "__main__":
-    print("\n |----- MRT module stable release version 0.2.4 ----|")
+    print("\n ┣━━━━━ MRT module stable release version 0.2.4 ━━━━━┫")
     wait()

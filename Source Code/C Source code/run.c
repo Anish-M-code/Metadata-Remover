@@ -8,68 +8,79 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define MEMORY_NEEDED 200
+#define COMMAND_SZ 400
+
 char file[80], vfile[80], fil[50], vfil[50];
 
-// Function For pausing program temporarily to display message.
-void pause(void)
+// This global buffer pointer should preferably point to a heap block
+char *global_buffer;
+
+// Global installation of required tools?
+bool global;
+// True if Windows
+bool os = false;
+
+
+// Make sure the global buffer is freed
+void free_glbl_buf()
 {
-  puts("\nPress any key to continue.");
-  getc(stdin);
-  puts("");
+  free(global_buffer);
 }
 
-//Function to check if output file is generated when expected and throw errors when necessary.
-void checker(void)
-{
-  char eff[80];
 
-  // Guess I should use snprintf here
-  memcpy(eff,"exiftool ",10);eff[9]='\0';
-  strcat(eff,file);
-  strcat(eff,">output.txt");
-
-  int result = system(eff);
-  if (result != 0)
+#ifdef _WIN32
+  // Function For pausing program temporarily to display message.
+  // Should only be called in NT systems
+  void pause(void)
   {
-      fputs("\n\nOutput.txt couldnot be created!\n" \
-            "maybe exiftool is missing or u don't have user permissions or\n"\
-            "Something went wrong like you entering a non image file!", stderr);
-      exit(EXIT_FAILURE);
+    puts("\nPress any key to continue.");
+    getc(stdin);
+    puts("");
   }
-}
+#endif
 
-//Function to check if output file is generated when expected and throw errors when necessary for videos.
-void vchecker(void)
+
+// Function to check if output file is generated when expected and throw errors when necessary for videos.
+int vchecker(void)
 {
-  int check=0;
-  char eff[200] , fvfile[50];
-  strcpy(fvfile,"Videos\\final_");
-  strcat(fvfile,vfil);
-  memcpy(eff,"exiftool ",10);eff[9]='\0';
-  strcat(eff,fvfile);
-  strcat(eff,">video_output_metadata.txt");
-  
-  int result = system(eff);
-  if (result != 0)
+  char *command_buf = malloc(COMMAND_SZ + 1);
+  if (NULL == command_buf)
   {
-    fputs("\n\nOutput.txt couldnot be created!\n" \
-          "maybe exiftool is missing or u don't have user permissions or\n"\
-          "Something went wrong like you entering a non image file!", stderr);
+    fputs("Unable to allocate necessary memory. Exiting.", stderr);
     exit(EXIT_FAILURE);
   }
+
+  if (global)
+    snprintf(command_buf, COMMAND_SZ, "exiftool 'out_%s' > o.mtd", global_buffer);
+  // Windows
+  else if (os == true)
+    snprintf(command_buf, COMMAND_SZ, ".\\exiftool.exe 'out_%s' > o.mtd", global_buffer);
+  else
+    snprintf(command_buf, COMMAND_SZ, "./exiftool 'out_%s' > o.mtd", global_buffer);
+  
+  int return_val = system(command_buf);
+  free(command_buf);
+  if (return_val != 0)
+  {
+    fputs("\nUnable to create output log file.\n" \
+          "Please check that you have the right permissions.", stderr);
+    exit(EXIT_FAILURE);
+  }
+  return 0;
 }
 
-//Function to get input from user.
-void input(void)
+
+// Function to get input from user.
+int input(void)
 {
-  system("cls");
-  printf("\n\t┣━━━━━ Image Sanitisation Tool ━━━━━┫\n");
-  printf("\n\n Enter Image name:");
-  scanf("%30s", fil);
-  memcpy(file,"Images\\",8);
-  file[8] = '\0';
-  strcat(file, fil);
+  printf("\n\nEnter path: ");
+  fgets(global_buffer, MEMORY_NEEDED, stdin);
+  *(strchr(global_buffer, '\n')) = '\0';
+  return 0;
 }
+
+
 
 bool endswith(char *str, char *extension)
 {
@@ -108,240 +119,255 @@ bool endswith(char *str, char *extension)
   return true;
 }
 
-//Function to sanitize the image selected using exiftool.
-void sanitize(void)
+// Function to sanitize the image selected using exiftool.
+int sanitize(void)
 {
-  int check=0;
-  int file_length = 0;
-  int visit = 0;
-  char eff[80];
-  char tmp[80];
-  file_length = strlen(file);
-
-  if (endswith(file, "tiff") || endswith(file, "tif"))
+  char *command_buf = malloc(COMMAND_SZ + 1);
+  if (NULL == command_buf)
   {
-     memcpy(tmp,"exiftool -all= -CommonIFD0= ",28);tmp[28] = '\0';
-     strcat(tmp,file);
-     check=system(tmp);
-     visit = 1;
-  }
- 
-  else if(visit == 0)
-  {
-    memcpy(eff,"exiftool ",10);eff[9]='\0';
-    strcat(eff,file);
-    strcat(eff," -all=");
-    check=system(eff);
-  }
-
-  if (check != 0)
-  {
-    fputs("Image sanitisation failed!\n" \
-          "maybe exiftool is missing or u don't have user permissions or\n" \
-          "Something went wrong like you entering a non image file!", stderr);
+    fputs("Unable to allocate necessary memory. Exiting", stderr);
     exit(EXIT_FAILURE);
   }
-}
 
-//Function to generate and check generation of input log.
-void ichecker(void)
-{
-  char eff[80];
-  memcpy(eff,"exiftool ",10);eff[9]='\0';
-  strcat(eff,file);
-  strcat(eff,">input.txt");
+  command_buf[COMMAND_SZ] = '\0';
 
-  int check = system(eff);
-  if (check != 0)
+  char *last_period = strrchr(global_buffer, '.');
+  if (NULL == last_period)
   {
-    fputs("\n\nInput log couldnot be created \n" \
-          "maybe exiftool is missing! or u don't have enough access permission!\n" \
-          "Something went wrong like you entering a non image file!\n", stderr);
+    fputs("File has no extension. Exiting.", stderr);
     exit(EXIT_FAILURE);
   }
-}
 
+  char *ends_with = strstr(global_buffer, "tif");
+  char *tiff_option = NULL == ends_with ? "" : "-CommonIFD0=";
 
-    //Function to generate and check generation of input log for videos.
-void ivchecker(void)
-{
-  char eff[200];
-  memcpy(eff,"exiftool ",10);eff[9]='\0';
-  strcat(eff,vfile);
-  strcat(eff,">video_input_metadata.txt");
-  int result = system(eff);
-  if(result != 0)
-  {
+  if (global)
+    snprintf(command_buf, 300, "exiftool -all= %s '%s'", tiff_option, global_buffer);
 
-    fputs("\n\nInput log couldnot be created \n" \
-          "maybe exiftool is missing! or u don't have enough access permission!\n" \
-          "Something went wrong like you entering a non image file!\n", stderr);
-    exit(EXIT_FAILURE);
-  }
-}
+  // Windows 
+  else if (os == true)
+    snprintf(command_buf, 300, ".\\exiftool.exe -all= %s '%s'", tiff_option, global_buffer);
 
-//Function to add support for * wildcards.
-void detect(void)
-{
-
-  bool flag = false;
-
-  unsigned int file_length = strlen(file);
-
-  // Starts at one to skip the first character, which might be a dot
-  for (unsigned int i = 1; i < file_length; i++)
-  {
-    if ((file[i] == '.') && 
-        (file[i-1] == '*') && 
-        ((file_length - i == 4) || ( file_length - i == 5)))
-        {
-          flag = true;
-          // Should it break here?
-          break;
-        }
-
-  }
-
-  if (flag)
-  {
-    FILE *f = fopen(file,"r");
-    if (f == NULL)
-    {
-        fputs("\n\nERROR: FILE NOT FOUND!\n\n", stderr);
-        exit(EXIT_FAILURE);
-    }
-    fclose(f);
-  }
-}
-
-//Function to check if image file was cleaned successfully by comparing size of input log and output log files generated by exiftool.
-int compare(void)
-{
-  // TODO: Find a way to get file sizes without this
-  FILE *input = fopen("input.txt","r");
-  FILE *output = fopen("output.txt","r");
-
-  if((input == NULL)||(output == NULL))
-  {
-      fputs("\n\nEither input.txt or output.txt not found!\n", stderr);
-      exit(EXIT_FAILURE);
-  }
-  fseek(input, 0, SEEK_END);
-  fseek(output, 0, SEEK_END);
-  unsigned int in_size = ftell(input);
-  unsigned int out_size = ftell(output);
-  fclose(input);
-  fclose(output);
-  if(in_size == out_size)
-  {
-      printf("\n\nNo Significant change!\n");
-  }
-  else if(in_size > out_size)
-  {
-      printf("\n\nMetadata Cleaned Successfully!\n");
-  }
-  // Is this else block actually needed?
+  // Linux/MacOS 
   else
+    snprintf(command_buf, 300, "./exiftool -all= %s '%s'", tiff_option, global_buffer);
+
+
+  int return_val = system(command_buf);
+  free(command_buf);
+  if (return_val != 0)
   {
-      printf("\n\nCleaning done with errors!\n");
+    fputs("Image sanitization failed!\n" \
+          "Please, check your permissions and that the file path is correct.\n", stderr);
+    exit(EXIT_FAILURE);
   }
   return 0;
 }
 
-int run(void) // combine all functions .
+// Function to generate and check generation of input log.
+int ichecker(char in)
 {
+  /* WARNING!
+   * Using user input like this in a system() call is a big vulnerability!
+   * For the Linux/MacOS version, user input should be safely escaped when
+   * encasing the path in single quotes '', but I'm not sure the same applies
+   * for PowerShell in Windows
+   * */
+  char *command_buf = malloc(COMMAND_SZ + 1);
+  if (NULL == command_buf)
+  {
+    fputs("Unable to allocate necessary memory. Exiting", stderr);
+    exit(EXIT_FAILURE);
+  }
+  command_buf[COMMAND_SZ] = '\0';
+
+  if (global)
+    snprintf(command_buf, 300, "exiftool '%s' > %c.mtd", global_buffer, in);
+
+  // Windows
+  else if (os == true)
+    snprintf(command_buf, 300, "./exiftool.exe '%s' > %c.mtd", global_buffer, in);
+
+  // Linux/MacOS
+  else
+    snprintf(command_buf, 300, "./exiftool '%s' > %c.mtd", global_buffer, in);
+
+  int return_val = system(command_buf);
+  free(command_buf);
+
+  if (return_val != 0)
+  {
+    fputs("\n\nInput log couldn't be created.\n" \
+          "Please, check that you have the right permissions and that\n" \
+          "the file exists.\n", 
+          stderr);
+    exit(EXIT_FAILURE);
+  }
+  return 0;
+}
+
+
+// Function to check if the file was cleaned successfully
+int compare(void)
+{
+  // TODO: Find a way to get file sizes without this
+  FILE *input = fopen("i.mtd","r");
+  if (NULL == input)
+  {
+    fputs("Unable to open required file 'i.mtd' in current directory.", stderr);
+    exit(EXIT_FAILURE);
+  }
+
+  FILE *output = fopen("o.mtd","r");
+  if (NULL == output)
+  {
+    fputs("Unable to open required file 'o.mtd' in current directory.", stderr);
+    exit(EXIT_FAILURE);
+  }
+
+  fseek(input, 0, SEEK_END);
+  unsigned int in_size = ftell(input);
+  fclose(input);
+
+  fseek(output, 0, SEEK_END);
+  unsigned int out_size = ftell(output);
+  fclose(output);
+
+
+  if (in_size > out_size)
+  {
+      puts("\nMetadata cleaned successfully!");
+  }
+  else 
+  {
+      puts("\nNo significant change!");
+  }
+
+  // Remove log files
+  system("rm i.mtd o.mtd");
+  return 0;
+}
+
+
+// Check for exiftool
+int tool(void)
+{
+  if (system("exiftool -ver > nothing") == 0)
+    global = true;
+
+  /* Windows */
+  else if (system("./exiftool.exe -ver > nothing") == 0 && os)
+    global = false;
+
+  /* Linux/MacOS */
+  else if (system("./exiftool -ver > nothing") == 0 && os == false)
+    global = false;
+
+  else 
+  {
+    fputs("\n\n Critical Error: exiftool NOT FOUND!", stderr);
+    fputs("\n\n┣━━━━━ Image Sanitization Failed! ━━━━━┫\n", stderr);
+    exit(EXIT_FAILURE);
+  }
+
+  system("rm nothing");
+  return 0;
+}
+
+
+// Check for ffmpeg
+int vtool(void)
+{
+  if (system("ffmpeg -version > nothing") == 0)
+    global = true;
+
+  /* Windows */
+  else if (system(".\\ffmpeg.exe -version > nothing") == 0 && os)
+    global = false;
+
+  /* Linux/MacOS */
+  else if (system("./ffmpeg -version > nothing") == 0 && os == false)
+    global = false;
+
+  else 
+  {
+    fputs("\n\n Critical Error: ffmpeg NOT FOUND!", stderr);
+    fputs("\n\n┣━━━━━ Video Sanitization Failed! ━━━━━┫\n", stderr);
+    exit(EXIT_FAILURE);
+  }
+
+  system("rm nothing");
+  return 0;
+}
+
+
+int vsanitize(void)
+{
+  char *command_buf = malloc(COMMAND_SZ + 1);
+  if (NULL == command_buf)
+  {
+    fputs("Unable to allocate necessary memory. Exiting.", stderr);
+    exit(EXIT_FAILURE);
+  }
+
+  if (global)
+    snprintf(command_buf, COMMAND_SZ, "ffmpeg -i '%s' -map_metadata -1 -c:v copy -c:a copy 'out_%s'", global_buffer, global_buffer);
+  // Windows 
+  else if (os == true)
+    snprintf(command_buf, COMMAND_SZ, ".\\ffmpeg.exe -i '%s' -map_metadata -1 -c:v copy -c:a copy 'out_%s'", global_buffer, global_buffer);
+  else
+    snprintf(command_buf, COMMAND_SZ, "./ffmpeg -i '%s' -map_metadata -1 -c:v copy -c:a copy 'out_%s'", global_buffer, global_buffer);
+
+
+  int return_val = system(command_buf);
+  free(command_buf);
+  if (return_val != 0)
+  {
+    fputs("\n\n     ┣━━━━━ Video Sanitization Failed! ━━━━━┫", stderr);
+    exit(EXIT_FAILURE);
+  }
+  return 0;
+}
+
+
+// Combine video functions
+int qrun(void)
+{
+  // Check for ffmpeg
+  vtool();
+  puts("\n\t ┣━━━━━ Video sanitization tool ━━━━━┫\n");
   input();
-  detect();
-  ichecker();
-  sanitize();
-  checker();
+  ichecker('i');
+  // Why are images sanitized in-place but videos are not?
+  vsanitize();
+  vchecker();
   compare();
   return 0;
 }
 
-void vinput(void)
+
+// Combine image functions
+int run(void) 
 {
-    /* Gets input ( filename ) for removal  of metadata from videos*/
-    system("cls");
-    printf("\n\t ┣━━━━━ Video sanitisation tool ━━━━━┫\n");
-    printf("\n\n Enter Video name:");
-    scanf("%30s",vfil);
-        memcpy(vfile,"Videos\\",8);vfile[8]='\0';
-        strcat(vfile,vfil);
-}
-
-int vdetect(void)
-{
-  /* Detects if video file is present or not.*/
-  // Isn't there a better way of checking if a file exists?
-  FILE *f = fopen(vfile, "r");
-  if (f == NULL)
-  {
-      fputs("\n\nERROR: FILE NOT FOUND!", stderr);
-      exit(EXIT_FAILURE);
-  }
-
-  fclose(f);
-  return 0;
-}
-
-int vtool(void)
-{
-  /*Detects ffmpeg in default installation of this software.*/
-  // Isn't there a better way of checking if a file exists?
-  FILE *f = fopen("ffmpeg.exe", "r");
-  if (f==NULL)
-  {
-    fputs("\n\n Critical Error: FFMPEG.EXE NOT FOUND!", stderr);
-    fputs("\n\n┣━━━━━ Video Sanitization Failed! ━━━━━┫\n", stderr);
-    exit(EXIT_FAILURE);
-  }
-  fclose(f);
-  return 0;
-}
-
-int vsanitise(void)
-{
-  /* Actual metadata removal process happens here.*/
-  // Is this variable used as a stack canary? 
-  int status=0;
-  char buffer[1000];
-  char fvfile[50];
-  strcpy(fvfile,"Videos\\final_");
-  strcat(fvfile,vfil);
-  memcpy(buffer,"ffmpeg -i ",11);
-  buffer[10]='\0';
-  strcat(buffer,vfile);
-  strcat(buffer," -map_metadata -1 -c:v copy -c:a copy ");
-  strcat(buffer,fvfile);
-  status=system(buffer);
-
-  if (status != 0)
-  {
-    printf("\n\n     ┣━━━━━ Video Sanitization Failed! ━━━━━┫\n:(\n");
-    exit(EXIT_FAILURE);
-  }
-  return 0;
-}
-
-int qrun(void)
-{
-  /* Responsible for combining all video management functions.*/
-  vtool();
-  vinput();
-  vdetect();
-  ivchecker();
-  vsanitise();
-  vchecker();
+  // Check exiftool
+  tool();
+  // Get image path 
+  puts("\n\t┣━━━━━ Image Sanitisation Tool ━━━━━┫");
+  input();
+  // Get input metadata (might not be completely sanitized)
+  ichecker('i');
+  // Run some exiftool commands to delete the metadata
+  sanitize();
+  // Get output metadata
+  ichecker('o');
+  // Compare sizes of files 
+  compare();
   return 0;
 }
 
 
 void menu(void)
 {
-  // int raw, backdoor;
-  // raw = backdoor = 0;
-
   char choice = 0;
 
   puts(" ╔═══════════════════════════════════╗ ");
@@ -355,9 +381,11 @@ void menu(void)
 
   while(1)
   {
-    printf("\n Enter your choice (1 or 2):");
+    printf("\n Enter your choice (1, 2 or 0):");
   
     choice = getc(stdin);
+    // Consume newline
+    getc(stdin);
     puts("");
     
     switch (choice)
@@ -366,47 +394,44 @@ void menu(void)
         if (run() == 0)
           puts("Done!");
         exit(EXIT_SUCCESS);
+
       case '2':
         if (qrun() == 0)
           puts("Done!");
         exit(EXIT_SUCCESS);
+
       case '0':
         puts("Bye!");
         exit(EXIT_SUCCESS);
+
       default:
         printf("Unknown option '%c'\n", choice);
     }
   }
-  //
-  //     backdoor = scanf("%d", &raw);
-  //     if (backdoor == 1)
-  //         break;
-  // }
-  // if (raw == 1)
-  // {
-  //     run();
-  // }
-  // else if( raw== 2)
-  // {
-  //     qrun();
-  //     pause();
-  // }
-  // else
-  // {
-  //     pause();
-  //     exit(EXIT_SUCCESS);
-  // }
 }
 
-// Maybe should get some arguments?
+// Maybe should get some arguments? Chat me up if adding command-line options
+// for power users sounds like a good idea
 int main(void)
 {
-  // TODO: Find a way to set the title of the window in windows
-  // system("title Metadata Removal Tool v3.5.0");
+  global_buffer = malloc(MEMORY_NEEDED + 1);
+  if (NULL == global_buffer)
+  {
+    fputs("Could not allocate enough memory to operate. Exiting.\n", stderr);
+    exit(EXIT_FAILURE);
+  }
 
+  global_buffer[MEMORY_NEEDED] = '\0';
 
-  // Register the pause function so that it won't be necessary to call it each time
+  atexit(free_glbl_buf);
+
+  // TODO: Test this in Windows
+  #ifdef _WIN32
+  os = true;
+  system("title Metadata Removal Tool v3.5.0");
   atexit(pause);
+  #endif
+
   menu();
   exit(EXIT_SUCCESS);
 }

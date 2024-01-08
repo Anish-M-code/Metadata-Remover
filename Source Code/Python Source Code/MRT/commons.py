@@ -3,6 +3,7 @@ This is the common library developed to satisfy the needs of the main program.
 It contains the necessary standard libraries and other basic functions.
 """
 
+# Predefine the function with a stub
 def wait():
     _WAIT_FUNC()
 
@@ -11,7 +12,6 @@ def wait():
 import platform
 import os
 import sys
-from shutil import copy2
 
 
 # Global constants
@@ -74,12 +74,6 @@ def rmfile(f):
         os.remove(f)
 
 
-# Function to copy textfile.
-def copy(file1, file2):
-    #TODO: Check that the output files are formatted correctly
-    copy2(file1, file2, follow_symlinks=False)
-
-
 # Function to Display contents of text file.
 def display(file):
     with open(file, "r") as f:
@@ -115,15 +109,21 @@ def get_website(cmd, web, snam, pkg):
 
 
 def gpg():
+    print("Checking GPG...")
     get_website("gpg --version", _GPG_SITE, _GPG_CMD, "Gnupg")
+    print("GPG found!")
 
 
 def exiftool():
+    print("Checking Exiftool...")
     get_website("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
+    print("Exiftool found!")
 
 
 def ffmpeg():
+    print("Checking ffmpeg...")
     get_website("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
+    print("ffmpeg found!")
 
 
 def start():
@@ -136,8 +136,6 @@ def end():
 
 def tskf():
     print("\n┣━━━━━ Task Failed! ━━━━━┫\n")
-
-
 
 
 setup()

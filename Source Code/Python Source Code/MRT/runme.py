@@ -37,6 +37,7 @@ def menu():
     while True:
         os.chdir(START_DIR)
         com.cls()
+        print("┣━━━━━ MRT module stable release version 0.2.4 ━━━━━┫")
         print(" ╔═══════════════════════════════════╗ ")
         print(" ║       Metadata Removal Tool       ║ ")
         print(" ╚═══════════════════════════════════╝ ")
@@ -89,19 +90,18 @@ def menu():
                     print("Metadata cleaned successfully.")
 
             case '5':
-                mrt.bulk("i")
+                mrt.bulk()
 
             case '6':
-                mrt.bulk("v")
+                mrt.bulk()
 
             case '7':
                 read_md = input("Filepath: ")
                 if not os.path.exists(read_md):
-                    print(f"File '{read_md}' doesn't exist.")
+                    com.error(f"File '{read_md}' doesn't exist.")
                     com.wait()
                     exit(1)
                 mrt.meta(read_md)
-                com.wait()
 
             case _:
                 print("Bye!")
@@ -116,7 +116,9 @@ def main():
     com.ffmpeg()
     com.exiftool()
 
-    print("┣━━━━━ MRT module stable release version 0.2.4 ━━━━━┫")
     # Make directory and run
     os.makedirs("MRT", exist_ok=True)
     menu()
+
+if __name__ == "__main__":
+    main()

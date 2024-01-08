@@ -3,9 +3,9 @@ This is the common library developed to satisfy the needs of the main program.
 It contains the necessary standard libraries and other basic functions.
 """
 
-# Predefine the function with a stub
+# Pause execution
 def wait():
-    _WAIT_FUNC()
+    input("\nPress any key to continue...")
 
 
 # Standard library modules, guaranteed to be available
@@ -14,10 +14,6 @@ import os
 import sys
 
 
-# Global constants
-# Not used yet
-_EXIFTOOL = "https://exiftool.org"
-_FFMPEG = "https://ffmpeg.org/"
 
 # Must be set up before using 
 _PLAT: str
@@ -41,22 +37,17 @@ def setup():
     global _GPG_SITE
     global _GPG_CMD
     global _WAIT_FUNC
-    _PLAT = platform.platform()
+    _PLAT = platform.platform().lower()
 
-    if _PLAT == "Windows":
+    if "windows" in _PLAT:
         _CLS_PLAT = "cls"
         _GPG_SITE = "https://gpg4win.org" 
         _GPG_CMD = "gpg4win"
-        def _WAIT_FUNC():
-            input("\nPress any key to exit...")
 
-    elif _PLAT in ["Linux", "Darwin"]:
+    elif "linux" in _PLAT or "darwin" in _PLAT:
         _CLS_PLAT = "clear"
         _GPG_SITE = "PLACEHOLDER FOR POSIX-LIKE SYSTEMS"
         _GPG_CMD = "gpg"
-        # In POSIX-like systems, a pause function wouldn't be needed
-        def _WAIT_FUNC():
-            pass
 
     else:
         _CLS_PLAT = "false"
@@ -77,8 +68,7 @@ def rmfile(f):
 # Function to Display contents of text file.
 def display(file):
     with open(file, "r") as f:
-        for data in f.read(1024):
-            print(data)
+        print(f.read(), end='')
 
 
 

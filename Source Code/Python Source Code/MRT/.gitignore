@@ -1,0 +1,10 @@
+*.mov
+*.png
+*.jpg
+*.jpeg
+__pycache__
+MRT
+log.txt
+output.txt
+input.txt
+

@@ -7,7 +7,7 @@ import os
 from shutil import copy, copy2
 
 try:
-    import MRT.commons as com
+    import commons as com
 except ImportError:
     print("'commons' module was not found. Try reinstalling the module.")
     exit(1)
@@ -15,6 +15,8 @@ except ImportError:
 
 # Function to write given message to file named log in append mode.
 def log_message(msg, file="log.txt"):
+    if os.path.getsize(file) > 1024 * 1024: # 1 MB
+        os.remove(file)
     with open(file, "a") as f:
         f.write(f"{msg}\n")
     return 
@@ -24,6 +26,8 @@ def log_message(msg, file="log.txt"):
 def meta(file):
     os.system(f"{_EXIFTOOL} {file} > meta.txt")
     com.display("meta.txt")
+    com.wait()
+    com.cls()
     os.remove("meta.txt")
     return
 
@@ -46,8 +50,15 @@ def extract_metadata(file, mode='input'):
 
 
 def img(image):
+    while True:
+        choice = input("Remove original copies? (y/N): ").lower().strip()
+        if choice in ['y', 'n']:
+            break
+
     # Exiftool renames the cleaned files automatically
     os.system(f"{_EXIFTOOL} -all= {image}")
+    if choice == 'y':
+        os.remove(f"{image}_original")
     return
 
 
@@ -69,24 +80,18 @@ VIDEO_EXTENSIONS = ("mp4", "mov", "3gp", "ogv", "flv", "wmv",
                     "avi", "mkv", "vob", "ogg", "webm")
 
 def single_file(file_name: str):
-    autoexif()
-
     if not os.path.exists(file_name):
         com.error(f"File {file_name} doesn't exist.")
         exit(1)
 
-    # should include function detect to detect exiftool [imp]
     file_extension = file_name.split('.')[-1]
     if file_extension in IMAGE_EXTENSIONS:
         extract_metadata(file_name, 'input')
-        copy("input.txt", "input_log.txt")
         img(file_name)
         extract_metadata(file_name,'output')
-        copy("output.txt", "output_log.txt")
 
     elif file_extension in VIDEO_EXTENSIONS:
         extract_metadata(file_name, 'input')
-        copy("input.txt", "input_log.txt")
         vid(file_name)
 
     else:
@@ -108,7 +113,7 @@ def single_file(file_name: str):
 
         elif in_size == out_size:
             print(f"{file_name}: No significant change!")
-            log_message(f"{file_name}:No significant change!")
+            log_message(f"{file_name}: No significant change!")
 
         os.remove("input.txt")
         os.remove("output.txt")

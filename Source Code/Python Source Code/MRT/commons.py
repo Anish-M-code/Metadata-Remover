@@ -1,61 +1,129 @@
-# flag=imp
-
 """ 
-This is the common library developed to satisfy the needs of  commandline python applications .
-It contains necessary  std libraries and basic functions for  its users.
+This is the common library developed to satisfy the needs of the main program.
+It contains the necessary standard libraries and other basic functions.
 """
 
-try:
-    import hashlib
-    import time
-    import platform
-    import os
-    import getpass
-    import webbrowser
+def wait():
+    _WAIT_FUNC()
 
-except ImportError:
-    print("Critical Error: Necessary Python Modules are missing!")
-    print("Commons module could not satisfy all the dependencies!")
-    x = input("\nPress Enter to exit...")
-    exit()
+
+# Standard library modules, guaranteed to be available
+import platform
+import os
+import sys
+from shutil import copy2
+
+
+# Global constants
+# Not used yet
+_EXIFTOOL = "https://exiftool.org"
+_FFMPEG = "https://ffmpeg.org/"
+
+# Must be set up before using 
+_PLAT: str
+_CLS_PLAT: str
+_GPG_SITE: str
+_GPG_CMD: str
+
+
+# Sets up the global constants about the platform
+def setup():
+    """
+    Sets up a bunch on constants depending on the platform. This is supposed to make the 
+        program have less 'if os.name == whatever' statements and also to concentrate all
+        hard-to-read elements into a single place. 
+
+        If you feel it negatively impacts on the readability and adds nothing of value, hit me up on github
+        and we'll discuss this.
+    """
+    global _PLAT 
+    global _CLS_PLAT
+    global _GPG_SITE
+    global _GPG_CMD
+    global _WAIT_FUNC
+    _PLAT = platform.platform()
+
+    if _PLAT == "Windows":
+        _CLS_PLAT = "cls"
+        _GPG_SITE = "https://gpg4win.org" 
+        _GPG_CMD = "gpg4win"
+        def _WAIT_FUNC():
+            input("\nPress any key to exit...")
+
+    elif _PLAT in ["Linux", "Darwin"]:
+        _CLS_PLAT = "clear"
+        _GPG_SITE = "PLACEHOLDER FOR POSIX-LIKE SYSTEMS"
+        _GPG_CMD = "gpg"
+        # In POSIX-like systems, a pause function wouldn't be needed
+        def _WAIT_FUNC():
+            pass
+
+    else:
+        _CLS_PLAT = "false"
+        _GPG_SITE = "PLACEHOLDER FOR OTHER PLATFORMS"
+        _GPG_CMD = "PLACEHOLDER FOR OTHER PLATFORMS"
+        error("Unsupported platform. Internal system checking disabled.\n")
+
+
+"""+----------------File I/O functions----------------+"""
 
 
 # Deletes file after checking if it exists or not.
-def r(f):
+def rmfile(f):
     if os.path.exists(f):
         os.remove(f)
 
 
+# Function to copy textfile.
+def copy(file1, file2):
+    #TODO: Check that the output files are formatted correctly
+    copy2(file1, file2, follow_symlinks=False)
+
+
+# Function to Display contents of text file.
+def display(file):
+    with open(file, "r") as f:
+        for data in f.read(1024):
+            print(data)
+
+
+
+"""+----------------Text display functions----------------+"""
+
+# Print errors to stderr
+def error(errstr: str) -> None:
+    sys.stderr.write(errstr)
+
+
+# Clearscreen
+def cls():
+    os.system(_CLS_PLAT)
+
+
 # Function to open website if prerequisite software is not found in PC.
-def detect(cmd, web, snam, pkg):
+def get_website(cmd, web, snam, pkg):
+    if os.system(cmd + "> chk.mtd") != 0:
+        cls()
+        error(
+                f"\nError: Package {snam}/{pkg} wasn't found!\n"
+                f"Please head to {web} to get instructions on how to"
+                "install the package before continuing.\n"
+             )
+        wait()
+        exit(1)
+    rmfile("chk.mtd")
 
-    if os.name == "nt": # checks if os is windows
-        if os.system(cmd + ">chk") != 0:
-            os.system("cls")
-            print(cmd)
-            print("\nError: " + pkg + " is not detected!")
-            print(
-                "\nPlease wait opening "
-                + snam
-                + " website in your browser!\nYou Have to download and install it.\n"
-            )
-            webbrowser.open(web)
-            x = input("\nPress any key to exit...")
-            r("chk")
-            exit()
 
-    else:
-        if os.system(cmd + ">chk") != 0:
-            os.system("clear")
-            print(
-                "\nError:"
-                + pkg
-                + " is not detected!\n Please install the package to continue."
-            )
-            x = input("\nPress Enter to exit...")
-            r("chk")
-            exit()
-    r("chk")
+def gpg():
+    get_website("gpg --version", _GPG_SITE, _GPG_CMD, "Gnupg")
+
+
+def exiftool():
+    get_website("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
+
+
+def ffmpeg():
+    get_website("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
 
 
 def start():
@@ -66,60 +134,10 @@ def end():
     print("\n┣━━━━━ Task Completed ━━━━━┫\n")
 
 
-def tsks():
-    start()
-
-
-def tske():
-    end()
-
-
 def tskf():
     print("\n┣━━━━━ Task Failed! ━━━━━┫\n")
 
 
-def wait():
-    x = input("\nPress Enter to continue...\n")
 
 
-# Function to Display contents of text file.
-def display(file):
-    with open(file, "r") as f:
-        s = f.read(1024)
-        print(s)
-        while len(s) > 0:
-            s = f.read(1024)
-            print(s)
-
-
-def gpg():
-    detect("gpg --version", "https://gpg4win.org", "gpg4win", "Gnupg")
-
-
-def exiftool():
-    detect("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
-
-
-def ffmpeg():
-    detect("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
-
-
-# Function to copy textfile.
-def copy(file, file1):
-    if os.path.exists(file):
-        f = open(file, "r")
-        s = open(file1, "a+")
-        if os.path.getsize(file) < (1024 * 1024 * 1024):
-            buff = f.read()
-            s.write("\n-------------------------------------------------------\n")
-            s.write(buff)
-        f.close()
-        s.close()
-
-
-# Clearscreen
-def cls():
-    if platform.system().lower() == "windows":
-        os.system("cls")
-    else:
-        os.system("clear")
+setup()

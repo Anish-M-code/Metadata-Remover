@@ -4,52 +4,53 @@ uses exiftool and ffmpeg to sanitize your files.
 """
 
 import os
-from shutil import copy, copy2
+import sys
+from shutil import SameFileError, copy, copy2
 
 try:
     import commons as com
 except ImportError:
     print("'commons' module was not found. Try reinstalling the module.")
-    exit(1)
+    sys.exit(1)
 
 
-# Function to write given message to file named log in append mode.
 def log_message(msg, file="log.txt"):
+    """Log the action in the log file."""
     if os.path.getsize(file) > 1024 * 1024: # 1 MB
         os.remove(file)
-    with open(file, "a") as f:
-        f.write(f"{msg}\n")
-    return 
+    with open(file, "a", encoding="utf-8") as log_file:
+        log_file.write(f"{msg}\n")
 
 
-# Function to read and display metadata of a file.
 def meta(file):
+    """Read metadata from file."""
     os.system(f"{_EXIFTOOL} {file} > meta.txt")
     com.display("meta.txt")
     com.wait()
     com.cls()
     os.remove("meta.txt")
-    return
 
 
-# Copy and rename
 def autoexif():
+    """Checks for a misnamed exiftool."""
     if os.path.exists("exiftool(-k).exe") and not os.path.exists("exiftool.exe"):
         try:
             copy2("exiftool(-k).exe", "exiftool.exe")
-        except Exception:
+        except (SameFileError, OSError):
             # Fail silently.
             pass
-    return 
 
 
 def extract_metadata(file, mode='input'):
+    """Extracts metadata from the file and writes to file depending on 
+       mode."""
     if os.system(f"{_EXIFTOOL} {file} > {mode}.txt") != 0:
         com.error(f"An error has occurred while running {_EXIFTOOL} on {mode}.txt.")
-        exit(1)
+        sys.exit(1)
 
 
 def img(image):
+    """Handle image files. Gives prompt to remove originals."""
     while True:
         choice = input("Remove original copies? (y/N): ").lower().strip()
         if choice in ['y', 'n']:
@@ -59,11 +60,10 @@ def img(image):
     os.system(f"{_EXIFTOOL} -all= {image}")
     if choice == 'y':
         os.remove(f"{image}_original")
-    return
 
 
-# Function to remove metadata from video file.
 def vid(file):
+    """Handle video files."""
     file_name = file.split('.')[:-1]
     file_extension = file.split('.')[-1]
     out_file = f"{file_name}_clean.{file_extension}"
@@ -72,17 +72,17 @@ def vid(file):
     com.cls()
     extract_metadata(out_file, 'output')
     copy("output.txt", "output_log.txt")
-    return
 
 
 IMAGE_EXTENSIONS = ("jpg", "gif", "bmp", "tiff", "jpeg", "png", "tif")
-VIDEO_EXTENSIONS = ("mp4", "mov", "3gp", "ogv", "flv", "wmv", 
+VIDEO_EXTENSIONS = ("mp4", "mov", "3gp", "ogv", "flv", "wmv",
                     "avi", "mkv", "vob", "ogg", "webm")
 
 def single_file(file_name: str):
+    """Determine filetype and call appropriate function."""
     if not os.path.exists(file_name):
         com.error(f"File {file_name} doesn't exist.")
-        exit(1)
+        sys.exit(1)
 
     file_extension = file_name.split('.')[-1]
     if file_extension in IMAGE_EXTENSIONS:
@@ -96,8 +96,6 @@ def single_file(file_name: str):
 
     else:
         com.error(f"Unsupported file format <{file_extension}>.\n")
-        return -1
-
 
     if os.path.exists("input.txt") and os.path.exists("output.txt"):
         in_size = os.path.getsize("input.txt")
@@ -122,11 +120,11 @@ def single_file(file_name: str):
         print(f"{file_name}: No cleaning done!")
         log_message(f"{file_name}: No cleaning done!")
 
-    return 
 
-
-# Function to remove metadata of all images (filetype = i) or videos (filetype = v) from folder.
+# TODO: Add checks for each file
 def bulk():
+    """Handle multiple files by checking the if all files 
+    are of the same type."""
     com.start()
     loc = input("Enter folder: ")
     os.chdir(loc)
@@ -134,7 +132,6 @@ def bulk():
         single_file(file)
 
     print("\nOutput\n")
-    
     log_file = "log.txt"
     if os.path.exists(log_file):
         com.display(log_file)
@@ -143,7 +140,6 @@ def bulk():
     print("Done!")
     com.end()
     com.wait()
-    return 
 
 
 _START_DIR = os.getcwd()

@@ -3,19 +3,17 @@ This is the common library developed to satisfy the needs of the main program.
 It contains the necessary standard libraries and other basic functions.
 """
 
-# Pause execution
-def wait():
-    input("\nPress any key to continue...")
-
-
 # Standard library modules, guaranteed to be available
 import platform
 import os
 import sys
 
+def wait():
+    """Pause execution."""
+    input("\nPress any key to continue...")
 
 
-# Must be set up before using 
+# Must be set up before using
 _PLAT: str
 _CLS_PLAT: str
 _GPG_SITE: str
@@ -29,19 +27,18 @@ def setup():
         program have less 'if os.name == whatever' statements and also to concentrate all
         hard-to-read elements into a single place. 
 
-        If you feel it negatively impacts on the readability and adds nothing of value, hit me up on github
-        and we'll discuss this.
-    """
-    global _PLAT 
+        If you feel it negatively impacts on the readability and adds nothing 
+        of value, hit me up on github
+        and we'll discuss this."""
+    global _PLAT
     global _CLS_PLAT
     global _GPG_SITE
     global _GPG_CMD
-    global _WAIT_FUNC
     _PLAT = platform.platform().lower()
 
     if "windows" in _PLAT:
         _CLS_PLAT = "cls"
-        _GPG_SITE = "https://gpg4win.org" 
+        _GPG_SITE = "https://gpg4win.org"
         _GPG_CMD = "gpg4win"
 
     elif "linux" in _PLAT or "darwin" in _PLAT:
@@ -56,36 +53,38 @@ def setup():
         error("Unsupported platform. Internal system checking disabled.\n")
 
 
-"""+----------------File I/O functions----------------+"""
+#+----------------File I/O functions----------------+
 
 
-# Deletes file after checking if it exists or not.
-def rmfile(f):
-    if os.path.exists(f):
-        os.remove(f)
+def rmfile(file):
+    """Checks if a file exists, if so, removes it."""
+    if os.path.exists(file):
+        os.remove(file)
 
 
-# Function to Display contents of text file.
 def display(file):
-    with open(file, "r") as f:
-        print(f.read(), end='')
+    """Opens and reads from a file, then prints."""
+    with open(file, "r", encoding="utf-8") as display_file:
+        print(display_file.read(), end='')
 
 
+#+----------------Text display functions----------------+
 
-"""+----------------Text display functions----------------+"""
 
-# Print errors to stderr
 def error(errstr: str) -> None:
+    """Wrapper to print to stderr. Might be replaced with the
+    logging module."""
     sys.stderr.write(errstr)
 
 
-# Clearscreen
 def cls():
+    """Sends a platform-appropriate clear screen command."""
     os.system(_CLS_PLAT)
 
 
-# Function to open website if prerequisite software is not found in PC.
 def get_website(cmd, web, snam, pkg):
+    """Prints the missing package's website so the user can 
+    download the tool."""
     if os.system(cmd + "> chk.mtd") != 0:
         cls()
         error(
@@ -94,37 +93,43 @@ def get_website(cmd, web, snam, pkg):
                 "install the package before continuing.\n"
              )
         wait()
-        exit(1)
+        sys.exit(1)
     rmfile("chk.mtd")
 
 
-def gpg():
-    print("Checking GPG...")
-    get_website("gpg --version", _GPG_SITE, _GPG_CMD, "Gnupg")
-    print("GPG found!")
+# Unused
+# def gpg():
+#    print("Checking GPG...")
+#    get_website("gpg --version", _GPG_SITE, _GPG_CMD, "Gnupg")
+#    print("GPG found!")
 
 
 def exiftool():
+    """Check if Exiftool exists."""
     print("Checking Exiftool...")
     get_website("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
     print("Exiftool found!")
 
 
 def ffmpeg():
+    """Check if ffmpeg exists."""
     print("Checking ffmpeg...")
     get_website("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
     print("ffmpeg found!")
 
 
 def start():
+    """Prints start of task delimeter."""
     print("\n┣━━━━━ Task Started ━━━━━┫\n")
 
 
 def end():
+    """Prints end of task delimeter."""
     print("\n┣━━━━━ Task Completed ━━━━━┫\n")
 
 
 def tskf():
+    """Prints failed task delimeter."""
     print("\n┣━━━━━ Task Failed! ━━━━━┫\n")
 
 

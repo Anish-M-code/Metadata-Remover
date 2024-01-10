@@ -1,24 +1,28 @@
+"""Main file to be run."""
+
+import sys
+import os
+from shutil import move, copy
+
+
 try:
     import commons as com
 except ImportError:
     print("Required module <commons.py> was not found.")
     print("Try reinstalling the module and try again.")
     input("\nPress any key to exit...")
-    exit(1)
+    sys.exit(1)
 
 
-try: 
+try:
     import mrt
 except ImportError:
     print("Required module <mrt.py> was not found.")
     print("Try reinstalling the module and try again.")
     input("\nPress any key to exit...")
-    exit(1)
+    sys.exit(1)
 
 
-import os
-from shutil import move, copy 
-from sys import exit
 
 # Tries to check if the module mutagen exists, even if not used in this file
 try:
@@ -26,14 +30,14 @@ try:
     del mutagen
 except ImportError:
     com.error(
-            "Module <mutagen> was not found. Please install it by running 'python3 -m pip install mutagen'"
-            "and then rerun this program.")
+            "Module <mutagen> was not found. Please install it by running "
+            "'python3 -m pip install mutagen' and then rerun this program.")
     com.wait()
-    exit(1)
+    sys.exit(1)
 
 
-# Function to display main menu()
 def menu():
+    """Displays the menu and handles choices."""
     while True:
         os.chdir(START_DIR)
         com.cls()
@@ -76,14 +80,13 @@ def menu():
                     com.error(
                             "Something went wrong, the metadata probably wasn't cleaned.\n"
                             "Aborting."
-                              ) 
-                    exit(1)
+                              )
+                    sys.exit(1)
                 else:
                     # Get only the name, not the extension
                     file_name = '.'.join(file.split('.')[:-1])
                     # Get extension
                     file_extension = file.split('.')[-1]
-                    
                     # Make new, great name
                     new_name = f"{file_name}_cleaned_.{file_extension}"
                     move(new_name, "..")
@@ -100,18 +103,19 @@ def menu():
                 if not os.path.exists(read_md):
                     com.error(f"File '{read_md}' doesn't exist.")
                     com.wait()
-                    exit(1)
+                    sys.exit(1)
                 mrt.meta(read_md)
 
             case _:
                 print("Bye!")
-                exit(0)
+                sys.exit(0)
 
 
 
 # Get current working directory so we can return to it after each loop
 START_DIR = os.getcwd()
 def main():
+    """Run required checks and set up the program."""
     # Perform checks to make sure ffmpeg and exiftool exist
     com.ffmpeg()
     com.exiftool()

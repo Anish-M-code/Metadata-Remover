@@ -1,125 +1,136 @@
-# flag=imp
-
 """ 
-This is the common library developed to satisfy the needs of  commandline python applications .
-It contains necessary  std libraries and basic functions for  its users.
+This is the common library developed to satisfy the needs of the main program.
+It contains the necessary standard libraries and other basic functions.
 """
 
-try:
-    import hashlib
-    import time
-    import platform
-    import os
-    import getpass
-    import webbrowser
+# Standard library modules, guaranteed to be available
+import platform
+import os
+import sys
 
-except ImportError:
-    print("Critical Error: Necessary Python Modules are missing!")
-    print("Commons module could not satisfy all the dependencies!")
-    x = input("\nPress Enter to exit...")
-    exit()
+def wait():
+    """Pause execution."""
+    input("\nPress any key to continue...")
 
 
-# Deletes file after checking if it exists or not.
-def r(f):
-    if os.path.exists(f):
-        os.remove(f)
+# Must be set up before using
+_PLAT: str
+_CLS_PLAT: str
+_GPG_SITE: str
+_GPG_CMD: str
 
 
-# Function to open website if prerequisite software is not found in PC.
-def detect(cmd, web, snam, pkg):
+# Sets up the global constants about the platform
+def setup():
+    """
+    Sets up a bunch on constants depending on the platform. This is supposed to make the 
+        program have less 'if os.name == whatever' statements and also to concentrate all
+        hard-to-read elements into a single place. 
 
-    if os.name == "nt": # checks if os is windows
-        if os.system(cmd + ">chk") != 0:
-            os.system("cls")
-            print(cmd)
-            print("\nError: " + pkg + " is not detected!")
-            print(
-                "\nPlease wait opening "
-                + snam
-                + " website in your browser!\nYou Have to download and install it.\n"
-            )
-            webbrowser.open(web)
-            x = input("\nPress any key to exit...")
-            r("chk")
-            exit()
+        If you feel it negatively impacts on the readability and adds nothing 
+        of value, hit me up on github
+        and we'll discuss this."""
+    global _PLAT
+    global _CLS_PLAT
+    global _GPG_SITE
+    global _GPG_CMD
+    _PLAT = platform.platform().lower()
+
+    if "windows" in _PLAT:
+        _CLS_PLAT = "cls"
+        _GPG_SITE = "https://gpg4win.org"
+        _GPG_CMD = "gpg4win"
+
+    elif "linux" in _PLAT or "darwin" in _PLAT:
+        _CLS_PLAT = "clear"
+        _GPG_SITE = "PLACEHOLDER FOR POSIX-LIKE SYSTEMS"
+        _GPG_CMD = "gpg"
 
     else:
-        if os.system(cmd + ">chk") != 0:
-            os.system("clear")
-            print(
-                "\nError:"
-                + pkg
-                + " is not detected!\n Please install the package to continue."
-            )
-            x = input("\nPress Enter to exit...")
-            r("chk")
-            exit()
-    r("chk")
+        _CLS_PLAT = "false"
+        _GPG_SITE = "PLACEHOLDER FOR OTHER PLATFORMS"
+        _GPG_CMD = "PLACEHOLDER FOR OTHER PLATFORMS"
+        error("Unsupported platform. Internal system checking disabled.\n")
+
+
+#+----------------File I/O functions----------------+
+
+
+def rmfile(file):
+    """Checks if a file exists, if so, removes it."""
+    if os.path.exists(file):
+        os.remove(file)
+
+
+def display(file):
+    """Opens and reads from a file, then prints."""
+    with open(file, "r", encoding="utf-8") as display_file:
+        print(display_file.read(), end='')
+
+
+#+----------------Text display functions----------------+
+
+
+def error(errstr: str) -> None:
+    """Wrapper to print to stderr. Might be replaced with the
+    logging module."""
+    sys.stderr.write(errstr)
+
+
+def cls():
+    """Sends a platform-appropriate clear screen command."""
+    os.system(_CLS_PLAT)
+
+
+def get_website(cmd, web, snam, pkg):
+    """Prints the missing package's website so the user can 
+    download the tool."""
+    if os.system(cmd + "> chk.mtd") != 0:
+        cls()
+        error(
+                f"\nError: Package {snam}/{pkg} wasn't found!\n"
+                f"Please head to {web} to get instructions on how to"
+                "install the package before continuing.\n"
+             )
+        wait()
+        sys.exit(1)
+    rmfile("chk.mtd")
+
+
+# Unused
+# def gpg():
+#    print("Checking GPG...")
+#    get_website("gpg --version", _GPG_SITE, _GPG_CMD, "Gnupg")
+#    print("GPG found!")
+
+
+def exiftool():
+    """Check if Exiftool exists."""
+    print("Checking Exiftool...")
+    get_website("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
+    print("Exiftool found!")
+
+
+def ffmpeg():
+    """Check if ffmpeg exists."""
+    print("Checking ffmpeg...")
+    get_website("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
+    print("ffmpeg found!")
 
 
 def start():
+    """Prints start of task delimeter."""
     print("\n┣━━━━━ Task Started ━━━━━┫\n")
 
 
 def end():
+    """Prints end of task delimeter."""
     print("\n┣━━━━━ Task Completed ━━━━━┫\n")
 
 
-def tsks():
-    start()
-
-
-def tske():
-    end()
-
-
 def tskf():
+    """Prints failed task delimeter."""
     print("\n┣━━━━━ Task Failed! ━━━━━┫\n")
 
 
-def wait():
-    x = input("\nPress Enter to continue...\n")
-
-
-# Function to Display contents of text file.
-def display(file):
-    with open(file, "r") as f:
-        s = f.read(1024)
-        print(s)
-        while len(s) > 0:
-            s = f.read(1024)
-            print(s)
-
-
-def gpg():
-    detect("gpg --version", "https://gpg4win.org", "gpg4win", "Gnupg")
-
-
-def exiftool():
-    detect("exiftool -h", "https://exiftool.org", "exiftool", "Exiftool")
-
-
-def ffmpeg():
-    detect("ffmpeg --help", "https://ffmpeg.org/", "ffmpeg", "ffmpeg")
-
-
-# Function to copy textfile.
-def copy(file, file1):
-    if os.path.exists(file):
-        f = open(file, "r")
-        s = open(file1, "a+")
-        if os.path.getsize(file) < (1024 * 1024 * 1024):
-            buff = f.read()
-            s.write("\n-------------------------------------------------------\n")
-            s.write(buff)
-        f.close()
-        s.close()
-
-
-# Clearscreen
-def cls():
-    if platform.system().lower() == "windows":
-        os.system("cls")
-    else:
-        os.system("clear")
+setup()

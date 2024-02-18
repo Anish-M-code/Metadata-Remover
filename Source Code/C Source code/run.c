@@ -1,17 +1,13 @@
-
-/* Metadata Removal Tool v3.5.0 for windows. Compile using gcc c complier mingw only*/
-//[ THIS IS A STABLE RELEASE]
-
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 
 #define MEMORY_NEEDED 200
 #define COMMAND_SZ 400
 
-char file[80], vfile[80], fil[50], vfil[50];
 
 // This global buffer pointer should preferably point to a heap block
 char *global_buffer;
@@ -102,20 +98,6 @@ bool endswith(char *str, char *extension)
   }
 
 
-  // int str1_length = strlen(str);
-  // int str2_length = strnlen(extension, 4);
-  // if (str1_length > str2_length)
-  // {
-  //   for(int i = str2_length-1, j=str1_length-1; i>=0;--j,--i)
-  //   {
-  //     if(tolower(str[j])!= tolower(extension[i]))
-  //     {
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // }
-  // return false;
   return true;
 }
 
@@ -167,7 +149,8 @@ int sanitize(void)
 // Function to generate and check generation of input log.
 int ichecker(char in)
 {
-  /* WARNING!
+  /* FIXME
+   * WARNING!
    * Using user input like this in a system() call is a big vulnerability!
    * For the Linux/MacOS version, user input should be safely escaped when
    * encasing the path in single quotes '', but I'm not sure the same applies
@@ -210,31 +193,22 @@ int ichecker(char in)
 // Function to check if the file was cleaned successfully
 int compare(void)
 {
-  // TODO: Find a way to get file sizes without this
-  FILE *input = fopen("i.mtd","r");
-  if (NULL == input)
+  // Here only .st_size is used
+  struct stat in, out;
+
+  if (-1 == stat("i.mtd", &in))
   {
-    fputs("Unable to open required file 'i.mtd' in current directory.", stderr);
+    perror("stat");
     exit(EXIT_FAILURE);
   }
 
-  FILE *output = fopen("o.mtd","r");
-  if (NULL == output)
+  if (-1 == stat("o.mtd", &out))
   {
-    fputs("Unable to open required file 'o.mtd' in current directory.", stderr);
+    perror("stat");
     exit(EXIT_FAILURE);
   }
 
-  fseek(input, 0, SEEK_END);
-  unsigned int in_size = ftell(input);
-  fclose(input);
-
-  fseek(output, 0, SEEK_END);
-  unsigned int out_size = ftell(output);
-  fclose(output);
-
-
-  if (in_size > out_size)
+  if (in.st_size > out.st_size)
   {
       puts("\nMetadata cleaned successfully!");
   }
@@ -410,8 +384,7 @@ void menu(void)
   }
 }
 
-// Maybe should get some arguments? Chat me up if adding command-line options
-// for power users sounds like a good idea
+
 int main(void)
 {
   global_buffer = malloc(MEMORY_NEEDED + 1);

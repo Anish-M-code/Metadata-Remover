@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/stat.h>
+#include "common.h"
+
 
 #define MEMORY_NEEDED 200
 #define COMMAND_SZ 400
@@ -43,8 +45,7 @@ int vchecker(void)
   char *command_buf = malloc(COMMAND_SZ + 1);
   if (NULL == command_buf)
   {
-    fputs("Unable to allocate necessary memory. Exiting.", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Error malloc *command_buf");
   }
 
   if (global)
@@ -59,9 +60,7 @@ int vchecker(void)
   free(command_buf);
   if (return_val != 0)
   {
-    fputs("\nUnable to create output log file.\n" \
-          "Please check that you have the right permissions.", stderr);
-    exit(EXIT_FAILURE);
+    handle_error_en(return_val, "Unable to create output log file. Please check that you have the right permissions.");
   }
   return 0;
 }
@@ -87,14 +86,14 @@ bool endswith(char *str, char *extension)
   if ((NULL == last_period) || '\0' == *(last_period + 1))
   {
     fprintf(stderr, "ERROR: No extension could be parsed from string '%s'.\n", str);
-    exit(EXIT_FAILURE);
+    handle_error("Error in clast_period = strrchr");
   }
 
   int result = strncasecmp(last_period, extension, 5);
   if (0 != result)
   {
     fprintf(stderr, "ERROR: Unknown image extension '%s'.\n", last_period + 1);
-    exit(EXIT_FAILURE);
+    handle_error("Error in result = strncasecmp");
   }
 
 
@@ -107,8 +106,7 @@ int sanitize(void)
   char *command_buf = malloc(COMMAND_SZ + 1);
   if (NULL == command_buf)
   {
-    fputs("Unable to allocate necessary memory. Exiting", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Error malloc *command_buf");
   }
 
   command_buf[COMMAND_SZ] = '\0';
@@ -117,7 +115,7 @@ int sanitize(void)
   if (NULL == last_period)
   {
     fputs("File has no extension. Exiting.", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Error in last_period = strrchr");
   }
 
   char *ends_with = strstr(global_buffer, "tif");
@@ -139,9 +137,7 @@ int sanitize(void)
   free(command_buf);
   if (return_val != 0)
   {
-    fputs("Image sanitization failed!\n" \
-          "Please, check your permissions and that the file path is correct.\n", stderr);
-    exit(EXIT_FAILURE);
+    handle_error_en(return_val, "Image sanitization failed! Please, check your permissions and that the file path is correct.");
   }
   return 0;
 }
@@ -159,8 +155,7 @@ int ichecker(char in)
   char *command_buf = malloc(COMMAND_SZ + 1);
   if (NULL == command_buf)
   {
-    fputs("Unable to allocate necessary memory. Exiting", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Error malloc *command_buf");
   }
   command_buf[COMMAND_SZ] = '\0';
 
@@ -180,11 +175,7 @@ int ichecker(char in)
 
   if (return_val != 0)
   {
-    fputs("\n\nInput log couldn't be created.\n" \
-          "Please, check that you have the right permissions and that\n" \
-          "the file exists.\n", 
-          stderr);
-    exit(EXIT_FAILURE);
+    handle_error_en(return_val, "Input log couldn't be created. Please, check that you have the right permissions and thatcthe file exists.");
   }
   return 0;
 }
@@ -198,14 +189,12 @@ int compare(void)
 
   if (-1 == stat("i.mtd", &in))
   {
-    perror("stat");
-    exit(EXIT_FAILURE);
+    handle_error("stat");
   }
 
   if (-1 == stat("o.mtd", &out))
   {
-    perror("stat");
-    exit(EXIT_FAILURE);
+    handle_error("stat");
   }
 
   if (in.st_size > out.st_size)
@@ -239,9 +228,8 @@ int tool(void)
 
   else 
   {
-    fputs("\n\n Critical Error: exiftool NOT FOUND!", stderr);
     fputs("\n\n┣━━━━━ Image Sanitization Failed! ━━━━━┫\n", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Critical Error: exiftool NOT FOUND!");
   }
 
   system("rm nothing");
@@ -265,9 +253,8 @@ int vtool(void)
 
   else 
   {
-    fputs("\n\n Critical Error: ffmpeg NOT FOUND!", stderr);
     fputs("\n\n┣━━━━━ Video Sanitization Failed! ━━━━━┫\n", stderr);
-    exit(EXIT_FAILURE);
+    handle_error( "Critical Error: ffmpeg NOT FOUND!");
   }
 
   system("rm nothing");
@@ -280,8 +267,7 @@ int vsanitize(void)
   char *command_buf = malloc(COMMAND_SZ + 1);
   if (NULL == command_buf)
   {
-    fputs("Unable to allocate necessary memory. Exiting.", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Error malloc *command_buf");
   }
 
   if (global)
@@ -298,7 +284,7 @@ int vsanitize(void)
   if (return_val != 0)
   {
     fputs("\n\n     ┣━━━━━ Video Sanitization Failed! ━━━━━┫", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Video Sanitization Failed!");
   }
   return 0;
 }
@@ -355,7 +341,7 @@ void menu(void)
 
   while(1)
   {
-    printf("\n Enter your choice (1, 2 or 0):");
+    printf("\n Enter your choice (1, 2 or 0): ");
   
     choice = getc(stdin);
     // Consume newline
@@ -390,8 +376,7 @@ int main(void)
   global_buffer = malloc(MEMORY_NEEDED + 1);
   if (NULL == global_buffer)
   {
-    fputs("Could not allocate enough memory to operate. Exiting.\n", stderr);
-    exit(EXIT_FAILURE);
+    handle_error("Error malloc *global_buffer");
   }
 
   global_buffer[MEMORY_NEEDED] = '\0';

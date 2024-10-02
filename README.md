@@ -6,12 +6,13 @@ A simple Metadata Removal Tool for removing metadata from images and videos. Dev
 
 # Whats the Use?
 
+<div align="center">
 <img src="https://user-images.githubusercontent.com/82881725/212539943-c7d1e178-5937-4c49-8665-e91408dc5902.JPG" width="677" height="345">
-
+</div>
 Take back your Privacy Online by removing Identifiable Metadata and reduce size of your images and videos before you post .
-
+<div align="center">
 <img src="https://user-images.githubusercontent.com/82881725/212539916-9c4386ba-a6f2-48d2-aa13-c523f33da46e.JPG">
-
+</div>
 Removes Metadata which might expose your location or show which device you used to take photos and videos.
 
 # Why is it important?

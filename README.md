@@ -1,8 +1,8 @@
 # Metadata-Remover
 A simple Metadata Removal Tool for removing metadata from images and videos. Developed using C and Python3.
-
+<div align="center">
 <img src="https://github.com/user-attachments/assets/fa835635-5b43-4d0a-b140-596d50ec63a7" width="444" height="432">
-
+</div>
 # Whats the Use?
 
 <img src="https://user-images.githubusercontent.com/82881725/212539943-c7d1e178-5937-4c49-8665-e91408dc5902.JPG" width="677" height="345">

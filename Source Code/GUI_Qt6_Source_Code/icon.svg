@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-FileCopyrightText: Metadata Cleaner contributors
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<svg width="128" height="128" version="1.0" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="sponge_shading" x1="30.111" x2="89.889" y1="281.38" y2="281.38" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#b5835a" offset="0"/>
+   <stop stop-color="#e5a50a" offset=".097354"/>
+   <stop stop-color="#e5a50a" offset=".28912"/>
+   <stop stop-color="#b5835a" offset=".45415"/>
+   <stop stop-color="#e5a50a" offset=".66135"/>
+   <stop stop-color="#e5a50a" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g id="icon">
+  <path id="file_shadow" d="m20 104v5c0 4.432 3.568 8 8 8h72c4.432 0 8-3.568 8-8v-5z" fill="#c0bfbc"/>
+  <rect id="file" x="20" y="5" width="88" height="108" rx="8" fill="#f6f5f4"/>
+  <g id="fingerprint" fill="none" stroke="#813d9c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path d="m59.46 49.111c6.7955 17.806 21.294 26.505 21.294 26.505"/>
+  <path d="m71.795 79.709c-14.951-11.876-29.694-35.661-14.673-39.407 12.74-3.1773 8.6314 16.753 30.179 29.31"/>
+  <path d="m60.143 80.48c-19.876-18.871-22.79-39.493-9.7354-46.22 24.846-12.803 24.16 20.272 41.166 28.286"/>
+  <path d="m44.073 74.931c-9.7769-13.57-17.498-38.849 3.8255-48.871 30.383-14.28 34.919 20.834 45.824 27.518"/>
+  </g>
+  <path id="cleaned_zone" d="m108 25.436c-40.541 10.75-71.772 60.021-71.772 60.021l48.851 22.011s8.9944-19.125 22.921-26.059z" fill="#fff" opacity=".9"/>
+  <g id="sponge">
+   <path d="m30.11 89.271 59.778 1.0104s-0.0095 2.4996 1e-4 6.6775c0.0046 1.968-0.4492 3.9705-1.4557 5.8305l-7.6143 14.072c-3.1637 5.847-10.418 8.007-16.265 4.843-4.6734-2.528-7.4951-8.603-12.168-11.132-4.708-2.547-11.268-1.549-15.976-4.096-4.0234-2.177-6.301-6.291-6.2996-10.55 7e-4 -1.9306 0-6.655 0-6.655z" fill="url(#sponge_shading)"/>
+   <path d="m31.567 83.55 7.6143-14.072c3.1637-5.8469 10.418-8.007 16.265-4.8433 4.7533 2.572 7.4153 8.5604 12.168 11.132 4.6281 2.5043 11.348 1.5921 15.976 4.0963 5.847 3.1638 8.0071 10.418 4.8433 16.265l-7.6143 14.072c-3.1637 5.847-10.418 8.007-16.265 4.844-4.6734-2.529-7.4951-8.604-12.168-11.133-4.708-2.547-11.268-1.548-15.976-4.0959-5.847-3.1637-8.0071-10.418-4.8433-16.265z" fill="#f5c211"/>
+  </g>
+ </g>
+</svg>

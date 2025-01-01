@@ -11,6 +11,9 @@
 #include <QTimer>
 #include <QFileInfo>
 #include <QFileDialog>
+#include <QFutureWatcher>
+#include <QtConcurrent/QtConcurrent>
+#include "downloadprogress.h"
 
 QString getFileNameFromPath(const QString &absolutePath) {
     QFileInfo fileInfo(absolutePath);
@@ -30,6 +33,9 @@ bool copyFolder(const QString &sourcePath, const QString &destinationPath) {
             qWarning() << "Failed to create destination directory:" << destinationPath;
             return false;
         }
+    }
+    else{
+        destinationDir.removeRecursively();
     }
 
     foreach (const QString &file, sourceDir.entryList(QDir::Files | QDir::NoDotAndDotDot)) {
@@ -188,7 +194,6 @@ void MainWindow::processFile(const QString &filename){
 
     // Clear all EXIF data
     QProcess clearProcess;
-    listWidget->addItem("Processing "+getFileNameFromPath(filePath));
     clearProcess.start(this->exiftoolPath, QStringList() << "-all=" << filePath);
     clearProcess.waitForFinished();
     clearProcess.readAllStandardOutput(); // Ignore output
@@ -213,14 +218,21 @@ void MainWindow::processFile(const QString &filename){
 
 }
 
+/*
 void MainWindow::processFiles(const QString &directory) {
+
+    DownloadProgress *obj = new DownloadProgress();
+    int progress = 10;
+    obj->displayProgress(progress,"Processing Folder");
+    obj->show();
     QDir dir(directory);
     QStringList files = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
-
+    int fileCount = files.size();
     if (files.isEmpty()) {
         qWarning() << "No files found in the directory.";
         return;
     } else {
+        int incrementPerFile = 90 / fileCount;
         QFile inputLog("input.log");
         QFile outputLog("output.log");
 
@@ -249,14 +261,15 @@ void MainWindow::processFiles(const QString &directory) {
             clearProcess.start(this->exiftoolPath, QStringList() << "-all=" << filePath);
             clearProcess.waitForFinished();
             clearProcess.readAllStandardOutput(); // Ignore output
-            listWidget->addItem("Processed:"+getFileNameFromPath(filePath));
+
 
             // Get and log output EXIF data
             QProcess outputProcess;
             outputProcess.start(this->exiftoolPath, QStringList() << filePath);
             outputProcess.waitForFinished();
             QString outputOutput = outputProcess.readAllStandardOutput().trimmed();
-
+            progress+=incrementPerFile;
+            obj->displayProgress(progress,filePath);
             outputStream << "\n" << outputOutput << "\n";
         }
 
@@ -272,7 +285,110 @@ void MainWindow::processFiles(const QString &directory) {
         msgBox.exec();
         copyLogsToDirectory(directory);
     }
+
+}*/
+
+void MainWindow::processFiles(const QString &directory) {
+    // Create progress dialog with parent
+    DownloadProgress *progressDialog = new DownloadProgress(this);
+    progressDialog->show();
+
+    // Use QtConcurrent for background processing
+    QFutureWatcher<void> *watcher = new QFutureWatcher<void>(this);
+
+    QFuture<void> future = QtConcurrent::run([this, directory, progressDialog]() {
+        QDir dir(directory);
+        QStringList files = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+
+        // Early exit if no files
+        if (files.isEmpty()) {
+            QMetaObject::invokeMethod(progressDialog, [progressDialog]() {
+                QMessageBox::warning(nullptr, "Error", "No files found in directory");
+                progressDialog->close();
+            }, Qt::QueuedConnection);
+            return;
+        }
+
+        int fileCount = files.size();
+        int incrementPerFile = 80 / fileCount;
+        int currentProgress = 10;
+
+        // Prepare log files
+        QFile inputLog("input.log");
+        QFile outputLog("output.log");
+
+        if (!inputLog.open(QIODevice::WriteOnly | QIODevice::Text) ||
+            !outputLog.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QMetaObject::invokeMethod(progressDialog, [progressDialog]() {
+                QMessageBox::critical(nullptr, "Error", "Failed to open log files");
+                progressDialog->close();
+            }, Qt::QueuedConnection);
+            return;
+        }
+
+        QTextStream inputStream(&inputLog);
+        QTextStream outputStream(&outputLog);
+
+        // Process each file
+        for (const QString &file : files) {
+            QString filePath = dir.filePath(file);
+
+            // Update progress
+            currentProgress += incrementPerFile;
+            QMetaObject::invokeMethod(progressDialog,
+                                      [progressDialog, currentProgress, filePath]() {
+                                          progressDialog->displayProgress(currentProgress, filePath.split("/").last());
+                                      },
+                                      Qt::QueuedConnection
+                                      );
+
+            // Process EXIF data
+            QProcess inputProcess, clearProcess, outputProcess;
+
+            // Get input EXIF data
+            inputProcess.start(this->exiftoolPath, QStringList() << filePath);
+            inputProcess.waitForFinished();
+            QString inputOutput = inputProcess.readAllStandardOutput().trimmed();
+            inputStream << "\n" << inputOutput << "\n";
+
+            // Clear EXIF data
+            clearProcess.start(this->exiftoolPath, QStringList() << "-all=" << filePath);
+            clearProcess.waitForFinished();
+
+            // Get output EXIF data
+            outputProcess.start(this->exiftoolPath, QStringList() << filePath);
+            outputProcess.waitForFinished();
+            QString outputOutput = outputProcess.readAllStandardOutput().trimmed();
+            outputStream << "\n" << outputOutput << "\n";
+        }
+
+        // Close log files
+        inputLog.close();
+        outputLog.close();
+
+        // Final processing and notification
+        QMetaObject::invokeMethod(this, [this, directory, progressDialog]() {
+            QMessageBox msgBox;
+            msgBox.setText("Metadata Removal Completed!");
+            msgBox.exec();
+
+            // Copy logs
+            copyLogsToDirectory(directory);
+
+            // Close progress dialog
+            progressDialog->displayProgress(90, "Processing Complete");
+            progressDialog->close();
+        }, Qt::QueuedConnection);
+    });
+
+    // Connect watcher to handle completion
+    connect(watcher, &QFutureWatcher<void>::finished, this, [watcher]() {
+        watcher->deleteLater();
+    });
+
+    watcher->setFuture(future);
 }
+
 
 QString MainWindow::getExifToolVersion() {
     QProcess process;
@@ -284,6 +400,7 @@ QString MainWindow::getExifToolVersion() {
     }
 
     QString output = process.readAllStandardOutput().trimmed();
+    qWarning() << "output is ::"<<output;
     if (output.isEmpty()) {
         qWarning() << "No output received from exiftool.";
         return QString();
@@ -303,7 +420,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::show_about);
     connect(ui->actionreportissues, &QAction::triggered, this, &MainWindow::report_issues);
     connect(ui->actionCheck_for_Updates, &QAction::triggered, this, &MainWindow::download_exiftool);
-    ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
 }
 
 MainWindow::~MainWindow()
@@ -319,7 +436,7 @@ void MainWindow::on_selectFileButton_clicked()
 void MainWindow::show_about()
 {
     QMessageBox::about(this, "About Metadata Remover",
-                       "Metadata Remover  v1.9\n\n"
+                       "Metadata Remover  v2.0\n\n"
                        "A simple Metadata Removal Tool for removing metadata from images. Developed by M. Anish <aneesh25861@gmail.com>"
 
                        "\n\n===Credits===\n"
@@ -337,26 +454,44 @@ void MainWindow::report_issues()
 void MainWindow::download_exiftool()
 {
     ContentReader *reader = new ContentReader(this);
-
+    DownloadProgress *obj = new DownloadProgress(this);
+    obj->show();
+    obj->displayProgress(5," Attempting to connect Exiftool servers...");
     QString exiftool_url = "https://exiftool.org/exiftool-";
 
+    QTimer *timeoutTimer = new QTimer(this);
+    timeoutTimer->setSingleShot(true);
+    timeoutTimer->setInterval(10000); // 10 seconds timeout
+
+    QObject::connect(timeoutTimer, &QTimer::timeout, this, [this, reader, obj, timeoutTimer]() {
+        qWarning() << "Connection timeout";
+        obj->displayProgress(0, "Connection timeout. Unable to fetch version.");
+        reader->deleteLater();
+        timeoutTimer->deleteLater();
+    });
+
     // Fetch the latest version from the server
-    QObject::connect(reader, &ContentReader::contentReceived, this, [this, reader, exiftool_url](const QString &content) mutable {
+    QObject::connect(reader, &ContentReader::contentReceived, this, [this, reader, obj ,timeoutTimer, exiftool_url](const QString &content) mutable {
         QString latest_exiftool_version = content.trimmed();
         QString full_exiftool_url = exiftool_url + latest_exiftool_version + "_64.zip";
-
+        timeoutTimer->stop();
+        obj->displayProgress(10,"checking new versions...");
         // Compare versions only if a valid version was retrieved
         QString currentVersion = getExifToolVersion();
         if (!latest_exiftool_version.isEmpty() && compareVersions(currentVersion, latest_exiftool_version) < 0) {
             // Download the file if the current version is lower than the latest version
             qDebug() << "Starting download...";
-            QObject::connect(reader, &ContentReader::downloadFinished, this, [this, latest_exiftool_version, reader](bool success) {
+            obj->displayProgress(15,"starting download...");
+            QObject::connect(reader, &ContentReader::downloadFinished, this, [this,obj, latest_exiftool_version, reader](bool success) {
                 if (success) {
-                    QTimer::singleShot(0, this, [this, latest_exiftool_version]() {
+                    QTimer::singleShot(0, this, [this,obj, latest_exiftool_version]() {
+                        obj->displayProgress(20,"Extracting Exiftool...");
                         unZipExiftoolDownload("exiftool.zip", ".", latest_exiftool_version);
+                        obj->displayProgress(100,"Downloaded successfully");
                     });
                 } else {
                     qWarning() << "Failed to download the file.";
+                    obj->displayProgress(0,"Unable to download Exiftool...");
                 }
                 reader->deleteLater();
             });
@@ -364,9 +499,13 @@ void MainWindow::download_exiftool()
             reader->downloadFile(QUrl(full_exiftool_url), "exiftool.zip");
         } else {
             qDebug() << "Current version is up to date or invalid latest version.";
+            obj->displayProgress(100,"Current version is up to date!");
             reader->deleteLater();
         }
+
     });
+
+    timeoutTimer->start();
 
     // Fetch the latest version text
     reader->fetchContent(QUrl("https://exiftool.org/ver.txt"));
@@ -374,23 +513,14 @@ void MainWindow::download_exiftool()
 
 void MainWindow::on_cleanButton_clicked()
 {
-    QStackedWidget *stackedWidget = ui->centralwidget->findChild<QStackedWidget*>("stackedWidget");
 
-    if (stackedWidget) {
-
-        stackedWidget->setCurrentIndex(1);
-    } else {
-        qDebug() << "QStackedWidget not found!";
-    }
-
-    this->listWidget = ui->stackedWidget->findChild<QListWidget*>("listWidget");
     if(this->isFile){
         processFile(ui->label->text());
     }
     else if(this->isFolder){
         processFiles(ui->label->text());
     }
-    listWidget->addItem("Done!");
+
 
 }
 

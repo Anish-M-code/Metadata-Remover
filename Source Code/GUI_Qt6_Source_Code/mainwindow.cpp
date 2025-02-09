@@ -116,7 +116,7 @@ void unZipExiftoolDownload(const QString &zipFilePath, const QString &outputDir 
 
     QFile::copy(QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool(-k).exe",QDir::currentPath()+"/exiftool.exe");
     qDebug()<<QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool(-k).exe";
-    QDir dir(QDir::currentPath()+"/exiftool-"+exif_path);
+    QDir dir(QDir::currentPath()+"/exiftool-"+exif_path+"_64");
     copyFolder(QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool_files",QDir::currentPath()+"/exiftool_files");
     dir.removeRecursively();
     QFile::remove("exiftool.zip");

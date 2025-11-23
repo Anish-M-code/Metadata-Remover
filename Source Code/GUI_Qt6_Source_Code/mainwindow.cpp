@@ -35,7 +35,15 @@ bool copyFolder(const QString &sourcePath, const QString &destinationPath) {
         }
     }
     else{
-        destinationDir.removeRecursively();
+        // If destination exists, remove it and recreate to ensure a clean copy
+        if (!destinationDir.removeRecursively()) {
+            qWarning() << "Failed to remove existing destination directory:" << destinationPath;
+            return false;
+        }
+        if (!destinationDir.mkpath(".")) {
+            qWarning() << "Failed to recreate destination directory:" << destinationPath;
+            return false;
+        }
     }
 
     foreach (const QString &file, sourceDir.entryList(QDir::Files | QDir::NoDotAndDotDot)) {
@@ -114,7 +122,15 @@ void unZipExiftoolDownload(const QString &zipFilePath, const QString &outputDir 
         qDebug() << "Unzipped successfully to" << outputDir;
     }
 
-    QFile::copy(QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool(-k).exe",QDir::currentPath()+"/exiftool.exe");
+    // Ensure we can overwrite any existing exiftool.exe when updating
+    QString exiftoolDest = QDir::currentPath()+"/exiftool.exe";
+    if (QFile::exists(exiftoolDest)) {
+        if (!QFile::remove(exiftoolDest)) {
+            qWarning() << "Failed to remove existing exiftool.exe at" << exiftoolDest;
+            return;
+        }
+    }
+    QFile::copy(QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool(-k).exe", exiftoolDest);
     qDebug()<<QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool(-k).exe";
     QDir dir(QDir::currentPath()+"/exiftool-"+exif_path+"_64");
     copyFolder(QDir::currentPath()+"/exiftool-"+exif_path+"_64/exiftool_files",QDir::currentPath()+"/exiftool_files");
